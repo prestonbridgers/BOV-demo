@@ -1,2 +1,4 @@
 *.o
 bov
+err.log
+prog.out
