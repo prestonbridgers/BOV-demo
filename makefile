@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-g -Wall
 LFLAGS=-pthread -lpanel -lcurses
 
-bovis: main.o ui.o
+bov: main.o ui.o
 	$(CC) $(LFLAGS) $^ -o $@
 
 main.o: main.c 
@@ -12,10 +12,8 @@ ui.o: ui.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 run:
-	@./bovis 2> err.log
+	@./bov 2> err.log
 
 clean:
-	rm bovis
+	rm bov
 	rm *.o
-	rm *.log
-	rm prog.out
