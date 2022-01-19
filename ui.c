@@ -300,9 +300,11 @@ cthread_run(void *arg)
     del_panel(panel_out);
     del_panel(panel_src);
     del_panel(panel_mem);
+    del_panel(panel_input);
     delwin(window_out);
     delwin(window_src);
     delwin(window_mem);
+    delwin(window_input);
     endwin();
     return NULL;
 }
