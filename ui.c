@@ -156,10 +156,12 @@ cthread_run(void *arg)
     WINDOW *window_out; // Program output window
     WINDOW *window_src; // Program source window
     WINDOW *window_mem; // Program memory window
+    WINDOW *window_input; // Window used to get user input if needed
 
     PANEL *panel_out; // Program output panel
     PANEL *panel_src; // Program source panel
     PANEL *panel_mem; // Program memory panel
+    PANEL *panel_input; // User input panel
     
     // Setup nCurses
 	initscr();
@@ -187,21 +189,25 @@ cthread_run(void *arg)
 
     uint16_t w_mem = COLS * 0.5 + 1;
     uint16_t w_out = COLS;
+    uint16_t w_input = COLS / 3;
 
     // Window heights
     uint16_t h_src = LINES * 0.75;
     uint16_t h_mem = LINES * 0.75;
     uint16_t h_out = LINES * 0.25;
+    uint16_t h_input = 3;
 
     // Window x positions
     uint16_t x_src = 0;
     uint16_t x_mem = w_src - 1;
     uint16_t x_out = 0;
+    uint16_t x_input = (COLS / 2) - (w_input / 2);
 
     // Window y positions
     uint16_t y_src = 0;
     uint16_t y_mem = 0;
     uint16_t y_out = h_src - 1;
+    uint16_t y_input = (LINES / 2) - (h_input / 2);
 
     // Setup inotify
     int inotify_fd, inotify_wd;
@@ -221,9 +227,11 @@ cthread_run(void *arg)
     window_out = newwin(h_out, w_out, y_out, x_out);
     window_src = newwin(h_src, w_src, y_src, x_src);
     window_mem = newwin(h_mem, w_mem, y_mem, x_mem);
+    window_input = newwin(h_input, w_input, y_input, x_input);
     panel_src = new_panel(window_src);
     panel_mem = new_panel(window_mem);
     panel_out = new_panel(window_out);
+    panel_input = new_panel(window_input);
 
     // Update memory panel
     while (running) {
@@ -279,6 +287,7 @@ cthread_run(void *arg)
         box(window_out, 0, 0);
         box(window_src, 0, 0);
         box(window_mem, 0, 0);
+        box(window_input, 0, 0);
 
         update_panels();
         doupdate();
