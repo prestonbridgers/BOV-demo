@@ -64,6 +64,7 @@ my_strcpy(char *dest, const char *src)
  */
 void
 bad_func(void)
+//bad_func(char *str)
 {
     fprintf(fd_output, "In bad func...\n");
     fflush(fd_output);
@@ -96,7 +97,12 @@ main(int argc, char *argv[])
     fprintf(fd_output, "Calling bad_func() ...\n");
     fflush(fd_output);
 
+    // What I want this to look like:
+    // char buf[255];
+    // get_user_string(buf);
+
     BEFORE_UNSAFE_CALL();
+    //bad_func(buf);
     bad_func();
 
     fprintf(fd_output, "Returned from bad_func() ...\n");
