@@ -151,6 +151,7 @@ void*
 cthread_run(void *arg)
 {
     // Variables
+    ThreadArgs *args = (ThreadArgs*) arg;
     short src_printed = 0;
 
     WINDOW *window_out; // Program output window
@@ -236,6 +237,7 @@ cthread_run(void *arg)
     // Update memory panel
     while (running) {
         // Update output panel
+        int err;
         int i = 0;
         int length = 0;
         char buffer[INOTIFY_BUF_LEN];
@@ -279,6 +281,19 @@ cthread_run(void *arg)
                 print_current_function(window_src, filename);
                 src_printed = 1;
             }
+        }
+
+        // Checking for user input signal
+        err = pthread_mutex_trylock(&mutex_input);
+        if (!err) {
+            // PRINT TO STDERR
+            fprintf(stderr, "Getting user input...\n");
+            fprintf(stderr, "Unlocking mutex\n");
+
+            pthread_mutex_unlock(&mutex_input);
+        }
+        else {
+            fprintf(stderr, "T1: Doing things\n");
         }
         
         // Update memory panel

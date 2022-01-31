@@ -21,6 +21,7 @@ uint64_t *buf_ptr = NULL;
 FILE *fd_output = NULL;
 int func_line_start = 0;
 char filename[128] = __FILE__;
+pthread_mutex_t mutex_input = PTHREAD_MUTEX_INITIALIZER;
 
 /**
  * Rewritten c std library function that sleeps for 1 second after each write
@@ -85,12 +86,20 @@ main(int argc, char *argv[])
 {
     // Local variables
     pthread_t cthread;
+    ThreadArgs *args = calloc(1, sizeof *args);
+
+    // Grab the user input lock
+    pthread_mutex_lock(&mutex_input);
    
     fd_output = fopen("prog.out", "w+");
     if (fd_output == NULL) {
         fprintf(stderr, "Failed to open file prog.out\n");
     }
-    pthread_create(&cthread, NULL, cthread_run, NULL);
+    pthread_create(&cthread, NULL, cthread_run, args);
+    sleep(1);
+
+    // Unlock the user input lock, signalling to get the user input
+    pthread_mutex_unlock(&mutex_input);
     sleep(1);
 
     // BEGIN main content of the program
