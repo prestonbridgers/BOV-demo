@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-g -Wall
-LFLAGS=-pthread -lpanel -lcurses
+LFLAGS=-pthread -lpanel -lcurses -lform
 
 bov: main.o ui.o
 	$(CC) $(LFLAGS) $^ -o $@

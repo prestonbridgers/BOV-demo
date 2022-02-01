@@ -2,7 +2,9 @@
 #define BOVIS_INCLUDED
 
 #include <curses.h>
+#include <form.h>
 #include <panel.h>
+#include <pthread.h>
 
 #define INOTIFY_MAX_EVENTS 1024 // iNotify event maximum
 #define INOTIFY_NAME_LEN 32     // iNotify filename length maximum

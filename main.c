@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <curses.h>
 #include <panel.h>
-#include <pthread.h>
 #include "bovis.h"
 
 /******************************************************************

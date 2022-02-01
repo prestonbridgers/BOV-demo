@@ -157,12 +157,24 @@ cthread_run(void *arg)
     WINDOW *window_out; // Program output window
     WINDOW *window_src; // Program source window
     WINDOW *window_mem; // Program memory window
-    WINDOW *window_input; // Window used to get user input if needed
+    WINDOW *window_form; // Window to hold user input form
+    FORM *form_input; //  Form for user input
+
+    FIELD *form_input_fields[3];
+    form_input_fields[0] = new_field(1, 35, 0, 0, 0, 0);
+    form_input_fields[2] = NULL;
+
+    /* Set field options */
+    set_field_back(form_input_fields[0], A_UNDERLINE);
+    field_opts_off(form_input_fields[0], O_AUTOSKIP); /* Don't go to next field when this */
+    /* Field is filled up         */
+    set_field_back(form_input_fields[1], A_UNDERLINE); 
+    field_opts_off(form_input_fields[1], O_AUTOSKIP);
 
     PANEL *panel_out; // Program output panel
     PANEL *panel_src; // Program source panel
     PANEL *panel_mem; // Program memory panel
-    PANEL *panel_input; // User input panel
+    PANEL *panel_form;
     
     // Setup nCurses
 	initscr();
@@ -190,13 +202,16 @@ cthread_run(void *arg)
 
     uint16_t w_mem = COLS * 0.5 + 1;
     uint16_t w_out = COLS;
-    uint16_t w_input = COLS / 3;
 
     // Window heights
     uint16_t h_src = LINES * 0.75;
     uint16_t h_mem = LINES * 0.75;
     uint16_t h_out = LINES * 0.25;
-    uint16_t h_input = 3;
+    
+    int h_input, w_input;
+    // Getting form dimensions
+    form_input = new_form(form_input_fields);
+    scale_form(form_input, &h_input, &w_input);
 
     // Window x positions
     uint16_t x_src = 0;
@@ -228,11 +243,18 @@ cthread_run(void *arg)
     window_out = newwin(h_out, w_out, y_out, x_out);
     window_src = newwin(h_src, w_src, y_src, x_src);
     window_mem = newwin(h_mem, w_mem, y_mem, x_mem);
-    window_input = newwin(h_input, w_input, y_input, x_input);
     panel_src = new_panel(window_src);
     panel_mem = new_panel(window_mem);
     panel_out = new_panel(window_out);
-    panel_input = new_panel(window_input);
+
+    // creating window_form
+    window_form = newwin(h_input + 2, w_input + 2, y_input, x_input);
+    keypad(window_form, TRUE);
+    panel_form = new_panel(window_form);
+
+    // Setting window for the form
+    set_form_win(form_input, window_form);
+    set_form_sub(form_input, derwin(window_form, h_input, w_input, 1, 1));
 
     // Update memory panel
     while (running) {
@@ -302,10 +324,31 @@ cthread_run(void *arg)
         box(window_out, 0, 0);
         box(window_src, 0, 0);
         box(window_mem, 0, 0);
-        box(window_input, 0, 0);
+        box(window_form, 0, 0);
+        post_form(form_input);
 
         update_panels();
         doupdate();
+
+        curs_set(1);
+        form_driver(form_input, REQ_NEXT_FIELD);
+        form_driver(form_input, REQ_PREV_FIELD);
+        int ch;
+        while((ch = wgetch(window_form)) != KEY_F(1))
+        {
+            switch(ch)
+            {   
+                default:
+                /* If this is a normal character, it gets */
+                /* Printed                */    
+                form_driver(form_input, ch);
+                break;
+            }
+
+            update_panels();
+            doupdate();
+        }
+        curs_set(0);
 
         usleep(250000);
     }
@@ -315,11 +358,11 @@ cthread_run(void *arg)
     del_panel(panel_out);
     del_panel(panel_src);
     del_panel(panel_mem);
-    del_panel(panel_input);
+    del_panel(panel_form);
     delwin(window_out);
     delwin(window_src);
     delwin(window_mem);
-    delwin(window_input);
+    delwin(window_form);
     endwin();
     return NULL;
 }
