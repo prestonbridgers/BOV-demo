@@ -1,5 +1,5 @@
-condvars:
-	gcc main.c -pthread -o $@
+condvars: condvars.c
+	gcc $^ -pthread -o $@
 
 run:
 	@./condvars
