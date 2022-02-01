@@ -6,58 +6,80 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <string.h>
 #include <unistd.h>
 
-pthread_mutex_t mut_input = PTHREAD_MUTEX_INITIALIZER;
-int running = 1;
+#define MAX_BUF 256
 
-typedef struct {
-    char buf[256];
-} t1_args_t;
+char buffer[MAX_BUF];
 
+short input_needed = 0;
+short input_ready = 0;
+
+pthread_mutex_t mutex_input = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond_input = PTHREAD_COND_INITIALIZER;
+pthread_cond_t cond_input_ready = PTHREAD_COND_INITIALIZER;
+
+// Writes to the buffer
 void*
-t1_run(void *arg)
+thread1(void *args)
 {
-    int err;
-    t1_args_t *args = (t1_args_t*) arg;
+    // Lock the mutex and wait for the signal from the main thread
+    pthread_mutex_lock(&mutex_input);
+    printf("T1: locked\n");
 
-    while (running) {
-        err = pthread_mutex_trylock(&mut_input);
-        if (!err) {
-            fprintf(stderr, "Getting user input...\n");
-
-            scanf("%s", args->buf);
-
-            fprintf(stderr, "Unlocking mutex\n");
-
-            pthread_mutex_unlock(&mut_input);
-        }
-        else {
-            fprintf(stderr, "T1: Doing things\n");
-        }
+    // Waiting for the signal
+    while (!input_needed) {
+        printf("T1: Waiting for input_needed\n");
+        pthread_cond_wait(&cond_input, &mutex_input);
     }
+
+    // Getting user input and storing in the buffer
+    sleep(5);
+    strncpy(buffer, "Hello World!", MAX_BUF);
+
+    // Release the lock
+    printf("T1: Buffer filled\n");
+    pthread_mutex_unlock(&mutex_input);
+    printf("T1: Released lock\n");
+
+
+    // Signal that the input is ready
+    input_ready = 1;
+    printf("T1: input_ready = 1, signalling M\n");
+    pthread_cond_signal(&cond_input_ready);
+
     return NULL;
 }
 
 int
-main(int argc, char *argv[])
+main()
 {
-    t1_args_t *t1_args = calloc(1, sizeof *t1_args);
-	pthread_t t1;
-    pthread_mutex_lock(&mut_input);
+    pthread_t t1;
 
-    pthread_create(&t1, NULL, t1_run, t1_args);
-    sleep(1);
+    pthread_create(&t1, NULL, thread1, NULL);
+    printf("M: Creating thread T1\n");
+    sleep(2);
 
-    fprintf(stderr, "Unlocking mut_input\n");
-    pthread_mutex_unlock(&mut_input);
-    sleep(1);
+    // Update condition
+    input_needed = 1;
+    printf("M: input_needed = 1, signalling t1\n");
+    // Signal waiting threads
+    pthread_cond_signal(&cond_input);
 
-    running = 0;
+    // Wait for input to be ready
+    printf("M: Waiting for buffer to be filled before accessing\n");
+    pthread_mutex_lock(&mutex_input);
+    printf("M: Grabbed the lock\n");
+    while (!input_ready) {
+        printf("M: Waiting for input_ready\n");
+        pthread_cond_wait(&cond_input_ready, &mutex_input);
+    }
+    printf("M: Buffer contents = \"%s\"\n", buffer);
+    pthread_mutex_unlock(&mutex_input);
+    printf("M: released lock\n");
+
     pthread_join(t1, NULL);
-    fprintf(stderr, "Threads joined, exiting...\n");
-    fprintf(stderr, "Got user input: %s\n", t1_args->buf);
-    pthread_mutex_destroy(&mut_input);
-	return EXIT_SUCCESS;	
+    printf("Exiting...\n");
+    return EXIT_SUCCESS;
 }
-
