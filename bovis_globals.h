@@ -8,6 +8,12 @@ extern uint64_t *buf_ptr;
 extern FILE *fd_output;
 extern int func_line_start;
 extern char filename[128];
-extern pthread_mutex_t mutex_input;
+
+extern char buffer_input[1024];
+extern pthread_mutex_t mutex_buffer;
+extern pthread_cond_t cond_buffer;
+extern short input_requested;
+extern short input_received;
+
 
 #endif

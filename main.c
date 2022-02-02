@@ -20,7 +20,12 @@ uint64_t *buf_ptr = NULL;
 FILE *fd_output = NULL;
 int func_line_start = 0;
 char filename[128] = __FILE__;
-pthread_mutex_t mutex_input = PTHREAD_MUTEX_INITIALIZER;
+
+char buffer_input[1024] = "";
+pthread_mutex_t mutex_buffer = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond_buffer = PTHREAD_COND_INITIALIZER;
+short input_requested = 0;
+short input_received = 0;
 
 /**
  * Rewritten c std library function that sleeps for 1 second after each write
@@ -77,6 +82,19 @@ bad_func(void)
     return;
 }
 
+void
+get_user_string() {
+    input_requested = 1;
+    fprintf(stderr, "M: input requested from T1\n");
+    pthread_mutex_lock(&mutex_buffer);
+    while (!input_received) {
+        fprintf(stderr, "M: Waiting for T1 to fill buffer\n");
+        pthread_cond_wait(&cond_buffer, &mutex_buffer);
+    }
+    fprintf(stderr, "M: Received the go ahead from T1\n");
+    pthread_mutex_unlock(&mutex_buffer);
+}
+
 /**
  * Entry point for the program.
  */
@@ -86,9 +104,6 @@ main(int argc, char *argv[])
     // Local variables
     pthread_t cthread;
     ThreadArgs *args = calloc(1, sizeof *args);
-
-    // Grab the user input lock
-    pthread_mutex_lock(&mutex_input);
    
     fd_output = fopen("prog.out", "w+");
     if (fd_output == NULL) {
@@ -97,17 +112,15 @@ main(int argc, char *argv[])
     pthread_create(&cthread, NULL, cthread_run, args);
     sleep(1);
 
-    // Unlock the user input lock, signalling to get the user input
-    pthread_mutex_unlock(&mutex_input);
-    sleep(1);
-
     // BEGIN main content of the program
     fprintf(fd_output, "Calling bad_func() ...\n");
     fflush(fd_output);
 
     // What I want this to look like:
-    // char buf[255];
-    // get_user_string(buf);
+    get_user_string();
+    pthread_mutex_lock(&mutex_buffer);
+    fprintf(stderr, "User String: %s\n", buffer_input);
+    pthread_mutex_unlock(&mutex_buffer);
 
     BEFORE_UNSAFE_CALL();
     //bad_func(buf);

@@ -10,6 +10,7 @@
 #include <sys/inotify.h>
 #include <inttypes.h>
 #include <stdint.h>
+#include <string.h>
 #include "bovis.h"
 #include "bovis_globals.h"
 
@@ -306,17 +307,19 @@ cthread_run(void *arg)
         }
 
         // Checking for user input signal
-        err = pthread_mutex_trylock(&mutex_input);
-        if (!err) {
-            // PRINT TO STDERR
-            fprintf(stderr, "Getting user input...\n");
-            fprintf(stderr, "Unlocking mutex\n");
-
-            pthread_mutex_unlock(&mutex_input);
+        pthread_mutex_lock(&mutex_buffer);
+        if (input_requested) {
+            fprintf(stderr, "T1: Input was requested\n");
+            strncpy(buffer_input, "This is a test of the input system", 1024);
+            sleep(6);
+            // Signal main that input has been received
+            fprintf(stderr, "T1: Signalling the main thread...\n");
+            input_received = 1;
+            input_requested = 0;
+            fprintf(stderr, "T1: buffer contents \"%s\"\n", buffer);
+            pthread_cond_signal(&cond_buffer);
         }
-        else {
-            fprintf(stderr, "T1: Doing things\n");
-        }
+        pthread_mutex_unlock(&mutex_buffer);
         
         // Update memory panel
         print_stack(window_mem);
