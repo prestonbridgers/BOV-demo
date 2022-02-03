@@ -311,12 +311,11 @@ cthread_run(void *arg)
         if (input_requested) {
             fprintf(stderr, "T1: Input was requested\n");
             strncpy(buffer_input, "This is a test of the input system", 1024);
+            fprintf(stderr, "T1: buffer contents \"%s\"\n", buffer_input);
             sleep(6);
-            // Signal main that input has been received
             fprintf(stderr, "T1: Signalling the main thread...\n");
             input_received = 1;
             input_requested = 0;
-            fprintf(stderr, "T1: buffer contents \"%s\"\n", buffer);
             pthread_cond_signal(&cond_buffer);
         }
         pthread_mutex_unlock(&mutex_buffer);
@@ -341,6 +340,9 @@ cthread_run(void *arg)
         {
             switch(ch)
             {   
+                case KEY_BACKSPACE:
+                    form_driver(form_input, REQ_DEL_PREV);
+                    break;
                 default:
                 /* If this is a normal character, it gets */
                 /* Printed                */    
