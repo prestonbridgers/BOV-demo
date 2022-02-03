@@ -58,6 +58,8 @@ void    print_line(WINDOW *win, uint64_t *line_ptr, int ypos);
 void    print_stack(WINDOW *win);
 char*   my_strcpy(char *dest, const char *src);
 void*   cthread_run(void *arg);
+void    get_user_input(void);
+char*   trim_whitespace(char *str);
 
 void bad_func();
 

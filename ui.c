@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <string.h>
+#include <ctype.h>
 #include "bovis.h"
 #include "bovis_globals.h"
 
@@ -158,24 +159,10 @@ cthread_run(void *arg)
     WINDOW *window_out; // Program output window
     WINDOW *window_src; // Program source window
     WINDOW *window_mem; // Program memory window
-    WINDOW *window_form; // Window to hold user input form
-    FORM *form_input; //  Form for user input
-
-    FIELD *form_input_fields[3];
-    form_input_fields[0] = new_field(1, 35, 0, 0, 0, 0);
-    form_input_fields[2] = NULL;
-
-    /* Set field options */
-    set_field_back(form_input_fields[0], A_UNDERLINE);
-    field_opts_off(form_input_fields[0], O_AUTOSKIP); /* Don't go to next field when this */
-    /* Field is filled up         */
-    set_field_back(form_input_fields[1], A_UNDERLINE); 
-    field_opts_off(form_input_fields[1], O_AUTOSKIP);
 
     PANEL *panel_out; // Program output panel
     PANEL *panel_src; // Program source panel
     PANEL *panel_mem; // Program memory panel
-    PANEL *panel_form;
     
     // Setup nCurses
 	initscr();
@@ -208,23 +195,16 @@ cthread_run(void *arg)
     uint16_t h_src = LINES * 0.75;
     uint16_t h_mem = LINES * 0.75;
     uint16_t h_out = LINES * 0.25;
-    
-    int h_input, w_input;
-    // Getting form dimensions
-    form_input = new_form(form_input_fields);
-    scale_form(form_input, &h_input, &w_input);
 
     // Window x positions
     uint16_t x_src = 0;
     uint16_t x_mem = w_src - 1;
     uint16_t x_out = 0;
-    uint16_t x_input = (COLS / 2) - (w_input / 2);
 
     // Window y positions
     uint16_t y_src = 0;
     uint16_t y_mem = 0;
     uint16_t y_out = h_src - 1;
-    uint16_t y_input = (LINES / 2) - (h_input / 2);
 
     // Setup inotify
     int inotify_fd, inotify_wd;
@@ -248,19 +228,9 @@ cthread_run(void *arg)
     panel_mem = new_panel(window_mem);
     panel_out = new_panel(window_out);
 
-    // creating window_form
-    window_form = newwin(h_input + 2, w_input + 2, y_input, x_input);
-    keypad(window_form, TRUE);
-    panel_form = new_panel(window_form);
-
-    // Setting window for the form
-    set_form_win(form_input, window_form);
-    set_form_sub(form_input, derwin(window_form, h_input, w_input, 1, 1));
-
     // Update memory panel
     while (running) {
         // Update output panel
-        int err;
         int i = 0;
         int length = 0;
         char buffer[INOTIFY_BUF_LEN];
@@ -309,11 +279,10 @@ cthread_run(void *arg)
         // Checking for user input signal
         pthread_mutex_lock(&mutex_buffer);
         if (input_requested) {
-            fprintf(stderr, "T1: Input was requested\n");
             strncpy(buffer_input, "This is a test of the input system", 1024);
-            fprintf(stderr, "T1: buffer contents \"%s\"\n", buffer_input);
-            sleep(6);
-            fprintf(stderr, "T1: Signalling the main thread...\n");
+
+            get_user_input();
+
             input_received = 1;
             input_requested = 0;
             pthread_cond_signal(&cond_buffer);
@@ -326,34 +295,10 @@ cthread_run(void *arg)
         box(window_out, 0, 0);
         box(window_src, 0, 0);
         box(window_mem, 0, 0);
-        box(window_form, 0, 0);
-        post_form(form_input);
 
         update_panels();
         doupdate();
 
-        curs_set(1);
-        form_driver(form_input, REQ_NEXT_FIELD);
-        form_driver(form_input, REQ_PREV_FIELD);
-        int ch;
-        while((ch = wgetch(window_form)) != KEY_F(1))
-        {
-            switch(ch)
-            {   
-                case KEY_BACKSPACE:
-                    form_driver(form_input, REQ_DEL_PREV);
-                    break;
-                default:
-                /* If this is a normal character, it gets */
-                /* Printed                */    
-                form_driver(form_input, ch);
-                break;
-            }
-
-            update_panels();
-            doupdate();
-        }
-        curs_set(0);
 
         usleep(250000);
     }
@@ -363,11 +308,127 @@ cthread_run(void *arg)
     del_panel(panel_out);
     del_panel(panel_src);
     del_panel(panel_mem);
-    del_panel(panel_form);
     delwin(window_out);
     delwin(window_src);
     delwin(window_mem);
-    delwin(window_form);
     endwin();
     return NULL;
+}
+
+/*
+ * Initiates the user input process. Creating the appropriate windows,
+ * forms, fields, etc. Gets the user's input and stores it in buffer_input
+ * global char buffer.
+ */
+void
+get_user_input()
+{
+    WINDOW *win_form;
+    PANEL *pan_form;
+    FORM *form;
+    FIELD *fields[2];
+    int w_form, h_form, x_form, y_form;
+
+    // Init fields
+    fields[0] = new_field(1, 35, 0, 0, 0, 0);
+    fields[1] = NULL;
+
+    set_field_back(fields[0], A_UNDERLINE);
+    field_opts_off(fields[0], O_AUTOSKIP);
+
+    form = new_form(fields);
+
+    // Getting form dimensions
+    scale_form(form, &h_form, &w_form);
+    x_form = (COLS / 2) - (w_form / 2);
+    y_form = (LINES / 2) - (h_form / 2);
+
+    // creating window_form
+    win_form = newwin(h_form + 2, w_form + 2, y_form, x_form);
+    keypad(win_form, TRUE);
+    pan_form = new_panel(win_form);
+
+    // Setting window for the form
+    set_form_win(form, win_form);
+    set_form_sub(form, derwin(win_form, h_form, w_form, 1, 1));
+
+    // Draw form window and post form
+    top_panel(pan_form);
+    box(win_form, 0, 0);
+    post_form(form);
+
+    update_panels();
+    doupdate();
+
+    // Main input loop
+    curs_set(1);
+    form_driver(form, REQ_NEXT_FIELD);
+    form_driver(form, REQ_PREV_FIELD);
+    int ch;
+    int done = 0;
+    while(!done)
+    {
+        ch = wgetch(win_form);
+        switch(ch)
+        {   
+            case KEY_BACKSPACE:
+                form_driver(form, REQ_DEL_PREV);
+                break;
+            case 10: // Enter
+                form_driver(form, REQ_NEXT_FIELD);
+                form_driver(form, REQ_PREV_FIELD);
+                form_driver(form, REQ_END_LINE);
+                strncpy(buffer_input,
+                        trim_whitespace(field_buffer(fields[0], 0)),
+                        1024);
+                done = 1;
+                break;
+            default:
+                form_driver(form, ch);
+                break;
+        }
+
+        update_panels();
+        doupdate();
+    }
+    curs_set(0);
+
+    unpost_form(form);
+    free_form(form);
+    free_field(fields[0]);
+    delwin(win_form);
+    del_panel(pan_form);
+}
+
+/* Trims the leading and trailing whitespace of a given string and returns 
+ * the a pointer to it.
+ *
+ * str - The string to be modified.
+ */
+char* trim_whitespace(char *str)
+{
+    if (str == NULL)
+    {
+        /* fprintf(stderr, "trim_whitespace: NULL string\n"); */
+        exit(1);
+    }
+    char *end;
+
+    //trim leading space
+    while(isspace(*str))
+        str++;
+
+    if(*str == 0) // all spaces?
+        return str;
+
+    // trim trailing space
+    end = str + strnlen(str, 128) - 1;
+
+    while(end > str && isspace(*end))
+        end--;
+
+    // write new null terminator
+    *(end+1) = '\0';
+
+    return str;
 }
