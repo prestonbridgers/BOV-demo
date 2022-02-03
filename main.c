@@ -68,17 +68,16 @@ my_strcpy(char *dest, const char *src)
  * Function that calls an unsafe subroutine.
  */
 void
-bad_func(void)
+bad_func(char *str)
 //bad_func(char *str)
 {
     fprintf(fd_output, "In bad func...\n");
     fflush(fd_output);
 
-    char *hello = "0123456789012345678";
     char buf[16];
 
     GET_BUF_PTR(buf);
-    my_strcpy(buf, hello);
+    my_strcpy(buf, str);
     return;
 }
 
@@ -116,15 +115,10 @@ main(int argc, char *argv[])
     fprintf(fd_output, "Calling bad_func() ...\n");
     fflush(fd_output);
 
-    // What I want this to look like:
     get_user_string();
-    pthread_mutex_lock(&mutex_buffer);
-    fprintf(stderr, "User String: %s\n", buffer_input);
-    pthread_mutex_unlock(&mutex_buffer);
 
     BEFORE_UNSAFE_CALL();
-    //bad_func(buf);
-    bad_func();
+    bad_func(buffer_input);
 
     fprintf(fd_output, "Returned from bad_func() ...\n");
     fprintf(fd_output, "Program has completed. Press 'q' to exit\n");
