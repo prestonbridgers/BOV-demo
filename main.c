@@ -115,6 +115,7 @@ main(int argc, char *argv[])
     fprintf(fd_output, "Calling bad_func() ...\n");
     fflush(fd_output);
 
+    // Get some user input and store it in buffer_input
     get_user_string();
 
     BEFORE_UNSAFE_CALL();
