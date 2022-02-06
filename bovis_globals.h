@@ -14,6 +14,7 @@ extern pthread_mutex_t mutex_buffer;
 extern pthread_cond_t cond_buffer;
 extern short input_requested;
 extern short input_received;
+extern short update_mem;
 
 
 #endif

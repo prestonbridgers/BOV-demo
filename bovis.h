@@ -18,6 +18,7 @@
 #define GREEN_PAIR 1
 #define YELLOW_PAIR 2
 #define RED_PAIR 3
+#define WINDOW_TITLE_COLOR 4
 
 /******************************************************************
  *                           MACROS                               *
@@ -59,6 +60,7 @@ void    print_stack(WINDOW *win);
 char*   my_strcpy(char *dest, const char *src);
 void*   cthread_run(void *arg);
 void    get_user_input(void);
+void    print_title(WINDOW *win, int width, char *title);
 char*   trim_whitespace(char *str);
 
 void bad_func();

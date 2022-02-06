@@ -145,6 +145,18 @@ print_stack(WINDOW *win)
     return;
 }
 
+/**
+ * Prints a title int the middle of the top thing.
+ * Note: call after boxing the window/drawing the window's border
+ */
+void
+print_title(WINDOW *win, int width, char *title) {
+    mvwaddstr(win, 0, (width / 2) - (strlen(title) / 2), title);
+    mvwchgat(win, 0, width / 2 - strlen(title) / 2, strlen(title),
+            A_BOLD | A_UNDERLINE, WINDOW_TITLE_COLOR, NULL);
+    return;
+}
+
 
 /**
  * The nCurses thread run function.
@@ -179,6 +191,7 @@ cthread_run(void *arg)
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
     init_pair(2, COLOR_YELLOW, COLOR_BLACK);
     init_pair(3, COLOR_RED, COLOR_BLACK);
+    init_pair(4, COLOR_CYAN, COLOR_BLACK);
 
     // Window widths
     uint16_t w_src;
@@ -279,8 +292,6 @@ cthread_run(void *arg)
         // Checking for user input signal
         pthread_mutex_lock(&mutex_buffer);
         if (input_requested) {
-            strncpy(buffer_input, "This is a test of the input system", 1024);
-
             get_user_input();
 
             input_received = 1;
@@ -290,11 +301,16 @@ cthread_run(void *arg)
         pthread_mutex_unlock(&mutex_buffer);
         
         // Update memory panel
-        print_stack(window_mem);
+        if (update_mem) {
+            print_stack(window_mem);
+        }
 
         box(window_out, 0, 0);
         box(window_src, 0, 0);
         box(window_mem, 0, 0);
+        print_title(window_out, w_out, "Program Output");
+        print_title(window_src, w_src, "Vulnerable Code");
+        print_title(window_mem, w_mem, "Stack Memory Dump");
 
         update_panels();
         doupdate();
@@ -355,6 +371,7 @@ get_user_input()
     // Draw form window and post form
     top_panel(pan_form);
     box(win_form, 0, 0);
+    print_title(win_form, w_form, "Enter an input string");
     post_form(form);
 
     update_panels();

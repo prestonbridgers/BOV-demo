@@ -26,6 +26,7 @@ pthread_mutex_t mutex_buffer = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond_buffer = PTHREAD_COND_INITIALIZER;
 short input_requested = 0;
 short input_received = 0;
+short update_mem = 1;
 
 /**
  * Rewritten c std library function that sleeps for 1 second after each write
@@ -60,6 +61,7 @@ my_strcpy(char *dest, const char *src)
     fprintf(fd_output, "\"\n");
     fflush(fd_output);
 
+    update_mem = 0;
     return dest;
 }
 
