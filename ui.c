@@ -292,8 +292,6 @@ cthread_run(void *arg)
         // Checking for user input signal
         pthread_mutex_lock(&mutex_buffer);
         if (input_requested) {
-            strncpy(buffer_input, "This is a test of the input system", 1024);
-
             get_user_input();
 
             input_received = 1;
