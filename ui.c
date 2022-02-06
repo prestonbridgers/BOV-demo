@@ -303,7 +303,9 @@ cthread_run(void *arg)
         pthread_mutex_unlock(&mutex_buffer);
         
         // Update memory panel
-        print_stack(window_mem);
+        if (update_mem) {
+            print_stack(window_mem);
+        }
 
         box(window_out, 0, 0);
         box(window_src, 0, 0);
