@@ -4,7 +4,8 @@
 
 > BOV is a tool for visualizing buffer overflow as they occur at runtime. It's intended use is by educators and students to teach and learn how this type of software vulnerability works. The educator writes a program containing a buffer overflow using the tool's API, and the student uses and interacts with the program to visually inspect the buffer in memory as the overflow is occuring.
 
-![BOV Demo Screenshot](images/bov_demo.png?raw=true "BOV Demo Screenshot")
+![BOV Demo Screenshot 1](images/bov_demo.png?raw=true "BOV Demo Screenshot")
+![BOV Demo Screenshot 2](images/bov_demo_1.png?raw=true "BOV Demo Screenshot")
 
 ## Dependencies
 
