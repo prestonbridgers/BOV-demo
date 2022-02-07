@@ -113,11 +113,11 @@ main(int argc, char *argv[])
     BEFORE_UNSAFE_CALL();
     bad_func(buffer_input);
 
-    bov_print("Returned from bad_func() ...\n");
+    bov_print("Returned from bad_func()...\n");
     bov_print("Program has completed. Press 'q' to exit\n");
     sleep(1);
     // END main content of the program
-    
+   
     running = 0;
     pthread_join(cthread, NULL);
     fclose(fd_output);
