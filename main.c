@@ -38,19 +38,15 @@ my_strcpy(char *dest, const char *src)
     GET_STACK_PTR();
     size_t i;
 
-    fprintf(fd_output, "In my_strcpy()...\n");
-    fflush(fd_output);
-
-    fprintf(fd_output, "Buffer contents: \"");
-    fflush(fd_output);
+    bov_print("In my_strcpy()...\n");
+    bov_print("Buffer contents: \"");
 
     // Copy contents of src into dest
     i = 0;
     while (src[i] != '\0') {
         dest[i] = src[i];
 
-        fprintf(fd_output, "%c", src[i]);
-        fflush(fd_output);
+        bov_print(&dest[i]);
 
         i++;
         sleep(1);
@@ -58,8 +54,7 @@ my_strcpy(char *dest, const char *src)
     // Insert the null character
     dest[i] = '\0';
 
-    fprintf(fd_output, "\"\n");
-    fflush(fd_output);
+    bov_print("\"\n");
 
     update_mem = 0;
     return dest;
@@ -71,11 +66,7 @@ my_strcpy(char *dest, const char *src)
  */
 void
 bad_func(char *str)
-//bad_func(char *str)
 {
-    fprintf(fd_output, "In bad func...\n");
-    fflush(fd_output);
-
     char buf[16];
 
     GET_BUF_PTR(buf);
@@ -114,8 +105,7 @@ main(int argc, char *argv[])
     sleep(1);
 
     // BEGIN main content of the program
-    fprintf(fd_output, "Calling bad_func() ...\n");
-    fflush(fd_output);
+    bov_print("Calling bad_func()...\n");
 
     // Get some user input and store it in buffer_input
     get_user_string();
@@ -123,9 +113,8 @@ main(int argc, char *argv[])
     BEFORE_UNSAFE_CALL();
     bad_func(buffer_input);
 
-    fprintf(fd_output, "Returned from bad_func() ...\n");
-    fprintf(fd_output, "Program has completed. Press 'q' to exit\n");
-    fflush(fd_output);
+    bov_print("Returned from bad_func() ...\n");
+    bov_print("Program has completed. Press 'q' to exit\n");
     sleep(1);
     // END main content of the program
     

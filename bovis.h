@@ -62,6 +62,7 @@ void*   cthread_run(void *arg);
 void    get_user_input(void);
 void    print_title(WINDOW *win, int width, char *title);
 char*   trim_whitespace(char *str);
+void    bov_print(char *s);
 
 void bad_func();
 

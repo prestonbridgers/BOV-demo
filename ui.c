@@ -15,6 +15,16 @@
 #include "bovis.h"
 #include "bovis_globals.h"
 
+/**
+ * Prints to the program output panel.
+ */
+void
+bov_print(char *s) {
+    fprintf(fd_output, s);
+    fflush(fd_output);
+    return;
+}
+
 /* Prints the calling function to an nCurses window.
  *
  * Usage - This function must be the first statement of the calling function.
