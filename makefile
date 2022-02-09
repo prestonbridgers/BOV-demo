@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -Wall
+CFLAGS=-g -Wall -z execstack -fno-stack-protector
 LFLAGS=-pthread -lpanel -lcurses -lform
 
 bov: main.o ui.o
