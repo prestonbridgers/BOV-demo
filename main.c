@@ -46,7 +46,8 @@ my_strcpy(char *dest, const char *src)
     while (src[i] != '\0') {
         dest[i] = src[i];
 
-        bov_print(&dest[i]);
+        fprintf(fd_output, "%c", dest[i]);
+        fflush(fd_output);
 
         i++;
         sleep(1);
@@ -67,10 +68,13 @@ my_strcpy(char *dest, const char *src)
 void
 bad_func(char *str)
 {
-    char buf[16];
+    char buf[8];
+    int x = 4;
 
     GET_BUF_PTR(buf);
+    fprintf("%d\n", x);
     my_strcpy(buf, str);
+    fprintf(stderr, "%d\n", x);
     return;
 }
 
@@ -108,10 +112,11 @@ main(int argc, char *argv[])
     bov_print("Calling bad_func()...\n");
 
     // Get some user input and store it in buffer_input
-    get_user_string();
+    //get_user_string();
 
     BEFORE_UNSAFE_CALL();
-    bad_func(buffer_input);
+    /* bad_func(buffer_input); */
+    bad_func("012345679");
 
     bov_print("Returned from bad_func()...\n");
     bov_print("Program has completed. Press 'q' to exit\n");
