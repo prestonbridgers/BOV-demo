@@ -108,6 +108,8 @@ main(int argc, char *argv[])
     pthread_create(&cthread, NULL, cthread_run, args);
     sleep(1);
 
+    bov_popup("This is a thing that prints some text. I don't know what happens but it's a thing and the text should wrap around lmao xD");
+
     // BEGIN main content of the program
     bov_print("Calling bad_func()...\n");
 

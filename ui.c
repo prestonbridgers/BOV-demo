@@ -25,6 +25,54 @@ bov_print(char *s) {
     return;
 }
 
+/**
+ * This function creates a popup displaying the given string.
+ * The user is instructed to press 'q' to close the popup.
+ *
+ * str - The string to be printed in the popup.
+ */
+void
+bov_popup(char *str)
+{
+    WINDOW *win;
+    PANEL *pan;
+    int width, height;
+    int xpos, ypos;
+    float ratio = 0.25;
+    size_t i;
+    size_t xcurs = 1;
+    size_t ycurs = 1;
+
+    width = COLS * ratio;
+    height = LINES * ratio;
+
+    xpos = COLS * (1 - ratio) / 2;
+    ypos = LINES * (1 - ratio) / 2;
+
+    win = newwin(height, width, ypos, xpos);
+    pan = new_panel(win);
+
+    box(win, 0,0);
+
+    for (i = 0; i < strlen(str); i++) {
+        if (xcurs == width - 2) {
+            xcurs = 1;
+            ycurs++;
+        }
+
+        mvwaddch(win, ycurs, xcurs, str[i]);
+        xcurs++;
+    }
+
+    update_panels();
+    doupdate();
+    getch();
+    
+    delwin(win);
+    del_panel(pan);
+    return;
+}
+
 /* Prints the calling function to an nCurses window.
  *
  * Usage - This function must be the first statement of the calling function.
