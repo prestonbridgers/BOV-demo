@@ -33,7 +33,6 @@
         : "=rm" (ret_ptr) );
 
 #define GET_STACK_PTR() \
-    func_line_start = __LINE__; \
     asm volatile ( \
         "mov %%rsp, %0;" \
         : "=rm" (stack_ptr) );

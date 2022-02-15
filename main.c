@@ -39,7 +39,6 @@ my_strcpy(char *dest, const char *src)
     GET_STACK_PTR();
     size_t i;
 
-    bov_print("In my_strcpy()...\n");
     bov_print("Buffer contents: \"");
 
     // Copy contents of src into dest
@@ -69,14 +68,15 @@ my_strcpy(char *dest, const char *src)
 void
 bad_func(char *str)
 {
+    func_line_start = __LINE__;
     int x = 4;
     char buf[8];
 
     GET_BUF_PTR(buf);
     GET_INT_PTR(x);
-    fprintf(stderr, "%d\n", x);
+    fprintf(fd_output, "Before overflow, x = %d\n", x);
     my_strcpy(buf, str);
-    fprintf(stderr, "%d\n", x);
+    fprintf(fd_output, "After overflow, x = %d\n", x);
     return;
 }
 
