@@ -68,15 +68,25 @@ my_strcpy(char *dest, const char *src)
 void
 bad_func(char *str)
 {
-    func_line_start = __LINE__;
-    int x = 4;
-    char buf[8];
+    func_line_start = __LINE__; /* IGNORE */
 
-    GET_BUF_PTR(buf);
-    GET_INT_PTR(x);
+    int x = 4;      // Initializing an integer
+    char buf[8];    // Declaring a buffer of size 8 bytes
+
+    GET_BUF_PTR(buf); /* IGNORE */
+    GET_INT_PTR(x);   /* IGNORE */
+
+    // Print value of x before the overflow occurs
     fprintf(fd_output, "Before overflow, x = %d\n", x);
+
+    // This my_strcpy function causes the buffer overflow:
+    // buf size is 8 bytes
+    // str = "012345679" (10 bytes including the null character)
     my_strcpy(buf, str);
+
+    // Print value of x before the overflow occurs
     fprintf(fd_output, "After overflow, x = %d\n", x);
+
     return;
 }
 
