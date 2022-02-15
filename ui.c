@@ -15,6 +15,35 @@
 #include "bovis.h"
 #include "bovis_globals.h"
 
+/** Function gets the length of the next word.
+ *  Assumes s points to a string beginning at the
+ *  start of a word.
+ *
+ *  Ex: s -> "hello world!"  | good
+ *      s -> " hello world!" | bad
+ *
+ *  s - The string of which to get the next word length.
+ *
+ *  returns - the length of the next word in s.
+ */
+int
+word_length(char *s)
+{
+    int wlen = 0;
+    size_t i = 0;
+
+    if (s == NULL) {
+        return -1;
+    }
+
+    while (s[i] != ' ' && s[i] != '\0') {
+        wlen++;
+        i++;
+    }
+
+    return wlen;
+}
+
 /**
  * Prints to the program output panel.
  */

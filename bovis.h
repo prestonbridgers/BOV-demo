@@ -64,6 +64,7 @@ void    print_title(WINDOW *win, int width, char *title);
 char*   trim_whitespace(char *str);
 void    bov_print(char *s);
 void    bov_popup(char *str);
+int     word_length(char *s);
 
 void bad_func();
 
