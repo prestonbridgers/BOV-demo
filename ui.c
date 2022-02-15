@@ -27,7 +27,7 @@
  *  returns - the length of the next word in s.
  */
 int
-word_length(char *s)
+bov_word_length(char *s)
 {
     int wlen = 0;
     size_t i = 0;
