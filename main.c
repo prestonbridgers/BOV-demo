@@ -17,6 +17,7 @@ uint8_t running = 1;
 uint64_t *ret_ptr = NULL;
 uint64_t *stack_ptr = NULL;
 uint64_t *buf_ptr = NULL;
+uint64_t *int_ptr = NULL;
 FILE *fd_output = NULL;
 int func_line_start = 0;
 char filename[128] = __FILE__;
@@ -68,11 +69,12 @@ my_strcpy(char *dest, const char *src)
 void
 bad_func(char *str)
 {
-    char buf[8];
     int x = 4;
+    char buf[8];
 
     GET_BUF_PTR(buf);
-    fprintf("%d\n", x);
+    GET_INT_PTR(x);
+    fprintf(stderr, "%d\n", x);
     my_strcpy(buf, str);
     fprintf(stderr, "%d\n", x);
     return;
@@ -108,7 +110,10 @@ main(int argc, char *argv[])
     pthread_create(&cthread, NULL, cthread_run, args);
     sleep(1);
 
-    bov_popup("This is a thing that prints some text. I don't know what happens but it's a thing and the text should wrap around lmao xD");
+    bov_popup("Welcome to the BOV integer overflow demo!\n\nThe current "
+            "value of the integer is 4, however, an unsafe strcpy is writing "
+            "a string to memory. The string is larger than the buffer it's being "
+            "written into, so it will overwrite the integer's value to 59.");
 
     // BEGIN main content of the program
     bov_print("Calling bad_func()...\n");

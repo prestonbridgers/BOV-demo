@@ -42,6 +42,9 @@
 #define GET_BUF_PTR(buf) \
     buf_ptr = (uint64_t*)buf;
 
+#define GET_INT_PTR(x) \
+    int_ptr = (uint64_t*)&x;
+
 
 
 /******************************************************************
