@@ -84,9 +84,17 @@ bov_popup(char *str)
     box(win, 0,0);
 
     for (i = 0; i < strlen(str); i++) {
-        if (xcurs == width - 2) {
-            xcurs = 1;
-            ycurs++;
+        // IF: between words
+        if (str[i] == ' ') {
+            // IF: next word is too long to fit in the popup
+            int len = bov_word_length(&str[i+1]);
+            if (xcurs + len >= width - 1) {
+                // Make a new line
+                ycurs++;
+                xcurs = 1;
+                // Skip printing the space by incrementing i again
+                i++;
+            }
         }
 
         mvwaddch(win, ycurs, xcurs, str[i]);
