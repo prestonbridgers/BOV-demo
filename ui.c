@@ -67,7 +67,7 @@ bov_popup(char *str)
     PANEL *pan;
     int width, height;
     int xpos, ypos;
-    float ratio = 0.25;
+    float ratio = 0.75;
     size_t i;
     size_t xcurs = 1;
     size_t ycurs = 1;
@@ -95,6 +95,13 @@ bov_popup(char *str)
                 // Skip printing the space by incrementing i again
                 i++;
             }
+        }
+
+        // IF: a \n char is found, make a new line
+        if (str[i] == '\n') {
+            ycurs++;
+            xcurs = 1;
+            continue;
         }
 
         mvwaddch(win, ycurs, xcurs, str[i]);
@@ -209,6 +216,12 @@ print_line(WINDOW *win, uint64_t *line_ptr, int ypos)
             mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
             wprintw(win, " <- Ret. Addr.");
             wattroff(win, COLOR_PAIR(RED_PAIR));
+        }
+        else if (line_ptr_v == (char*)int_ptr) {
+            wattron(win, COLOR_PAIR(YELLOW_PAIR));
+            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
+            wprintw(win, " <- int x");
+            wattroff(win, COLOR_PAIR(YELLOW_PAIR));
         }
         // BETWEEN END OF BUFFER AND RET ADDR
         else if (line_ptr_v > buf_ptr_v + 4 && line_ptr_v < (char*) ret_ptr) {
