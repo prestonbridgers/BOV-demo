@@ -15,6 +15,35 @@
 #include "bovis.h"
 #include "bovis_globals.h"
 
+/** Function gets the length of the next word.
+ *  Assumes s points to a string beginning at the
+ *  start of a word.
+ *
+ *  Ex: s -> "hello world!"  | good
+ *      s -> " hello world!" | bad
+ *
+ *  s - The string of which to get the next word length.
+ *
+ *  returns - the length of the next word in s.
+ */
+int
+bov_word_length(char *s)
+{
+    int wlen = 0;
+    size_t i = 0;
+
+    if (s == NULL) {
+        return -1;
+    }
+
+    while (s[i] != ' ' && s[i] != '\0') {
+        wlen++;
+        i++;
+    }
+
+    return wlen;
+}
+
 /**
  * Prints to the program output panel.
  */
@@ -22,6 +51,69 @@ void
 bov_print(char *s) {
     fprintf(fd_output, s);
     fflush(fd_output);
+    return;
+}
+
+/**
+ * This function creates a popup displaying the given string.
+ * The user is instructed to press 'q' to close the popup.
+ *
+ * str - The string to be printed in the popup.
+ */
+void
+bov_popup(char *str)
+{
+    WINDOW *win;
+    PANEL *pan;
+    int width, height;
+    int xpos, ypos;
+    float ratio = 0.75;
+    size_t i;
+    size_t xcurs = 1;
+    size_t ycurs = 1;
+
+    width = COLS * ratio;
+    height = LINES * ratio;
+
+    xpos = COLS * (1 - ratio) / 2;
+    ypos = LINES * (1 - ratio) / 2;
+
+    win = newwin(height, width, ypos, xpos);
+    pan = new_panel(win);
+
+    box(win, 0,0);
+
+    for (i = 0; i < strlen(str); i++) {
+        // IF: between words
+        if (str[i] == ' ') {
+            // IF: next word is too long to fit in the popup
+            int len = bov_word_length(&str[i+1]);
+            if (xcurs + len >= width - 1) {
+                // Make a new line
+                ycurs++;
+                xcurs = 1;
+                // Skip printing the space by incrementing i again
+                i++;
+            }
+        }
+
+        // IF: a \n char is found, make a new line
+        if (str[i] == '\n') {
+            ycurs++;
+            xcurs = 1;
+            continue;
+        }
+
+        mvwaddch(win, ycurs, xcurs, str[i]);
+        xcurs++;
+    }
+
+    update_panels();
+    doupdate();
+    getch();
+    
+    delwin(win);
+    del_panel(pan);
     return;
 }
 
@@ -93,41 +185,61 @@ print_line(WINDOW *win, uint64_t *line_ptr, int ypos)
     if (line_ptr == NULL) {
         return;
     }
+    /* fprintf(stderr, "%#010" PRIx32 "\n", high); */
+    /* fprintf(stderr, "%#010" PRIx32 "\n", low); */
+    /* fprintf(stderr, "%#018" PRIx64 "\n\n", *line_ptr); */
 
+    uint64_t high = (0xffffffff00000000 & *line_ptr) >> 32;
+    uint64_t low  = (0x00000000ffffffff & *line_ptr);
+    char *line_ptr_v = (char*) line_ptr;
+    char *buf_ptr_v  = (char*) buf_ptr;
+    for (int i = 0; i < 2; i++) {
+        line_ptr_v += i * 4;
+        uint32_t mem = low;
+        if (i == 1) mem = high;
 
-    if (line_ptr == buf_ptr) {
-        wattron(win, COLOR_PAIR(GREEN_PAIR));
-        mvwprintw(win, ypos + 2, 2, "%#018" PRIx64, *line_ptr);
-        wprintw(win, " <- Buffer");
-        wattroff(win, COLOR_PAIR(GREEN_PAIR));
+        if (line_ptr_v == buf_ptr_v) {
+            wattron(win, COLOR_PAIR(GREEN_PAIR));
+            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
+            wprintw(win, " <- Buffer");
+            wattroff(win, COLOR_PAIR(GREEN_PAIR));
+        }
+        //TODO: Calculate buf_ptr + 1 based on the size of the buffer that should
+        //      be passed to this function as a paramater.
+        else if (line_ptr_v == buf_ptr_v + 4) {
+            wattron(win, COLOR_PAIR(GREEN_PAIR));
+            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
+            wattroff(win, COLOR_PAIR(GREEN_PAIR));
+        }
+        else if (line_ptr_v == (char*)ret_ptr || line_ptr_v == (char*) ret_ptr + 4) {
+            wattron(win, COLOR_PAIR(RED_PAIR));
+            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
+            wprintw(win, " <- Ret. Addr.");
+            wattroff(win, COLOR_PAIR(RED_PAIR));
+        }
+        else if (line_ptr_v == (char*)int_ptr) {
+            wattron(win, COLOR_PAIR(YELLOW_PAIR));
+            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
+            wprintw(win, " <- int x");
+            wattroff(win, COLOR_PAIR(YELLOW_PAIR));
+        }
+        // BETWEEN END OF BUFFER AND RET ADDR
+        else if (line_ptr_v > buf_ptr_v + 4 && line_ptr_v < (char*) ret_ptr) {
+            wattron(win, COLOR_PAIR(YELLOW_PAIR));
+            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
+            wattroff(win, COLOR_PAIR(YELLOW_PAIR));
+        }
+        else if (line_ptr_v == (char*)stack_ptr) {
+            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
+            wprintw(win, " <- %%RSP");
+        }
+        else {
+            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
+        }
+
+        ypos += 1;
+        wprintw(win, "\n");
     }
-    //TODO: Calculate buf_ptr + 1 based on the size of the buffer that should
-    //      be passed to this function as a paramater.
-    else if (line_ptr == buf_ptr + 1) {
-        wattron(win, COLOR_PAIR(GREEN_PAIR));
-        mvwprintw(win, ypos + 2, 2, "%#018" PRIx64, *line_ptr);
-        wattroff(win, COLOR_PAIR(GREEN_PAIR));
-    }
-    // BETWEEN END OF BUFFER AND RET ADDR
-    else if (line_ptr > buf_ptr + 1 && line_ptr < ret_ptr) {
-        wattron(win, COLOR_PAIR(YELLOW_PAIR));
-        mvwprintw(win, ypos + 2, 2, "%#018" PRIx64, *line_ptr);
-        wattroff(win, COLOR_PAIR(YELLOW_PAIR));
-    }
-    else if (line_ptr == stack_ptr) {
-        mvwprintw(win, ypos + 2, 2, "%#018" PRIx64, *line_ptr);
-        wprintw(win, " <- %%RSP");
-    }
-    else if (line_ptr == ret_ptr) {
-        wattron(win, COLOR_PAIR(RED_PAIR));
-        mvwprintw(win, ypos + 2, 2, "%#018" PRIx64, *line_ptr);
-        wprintw(win, " <- Ret. Addr.");
-        wattroff(win, COLOR_PAIR(RED_PAIR));
-    }
-    else {
-        mvwprintw(win, ypos + 2, 2, "%#018" PRIx64, *line_ptr);
-    }
-    wprintw(win, "\n");
 }
 
 /* Prints 8 byte lines from the stack starting at address stack_ptr.
@@ -149,7 +261,7 @@ print_stack(WINDOW *win)
     int i = 0;
     for (i = 0; i < NUM_LINES; i++)
     {
-        print_line(win, tmp, i);
+        print_line(win, tmp, i*2);
         tmp++;
     }
     return;
