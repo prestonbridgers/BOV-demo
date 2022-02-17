@@ -21,9 +21,7 @@ uint64_t *buf_ptr = NULL;
 uint64_t *int_ptr = NULL;
 FILE *fd_output = NULL;
 int func_line_start = 0;
-
-// TODO: Find a way to set the filename for the right .c file dynamically
-char filename[128] = "demo.c";
+char filename[128] = __FILE__;
 
 char buffer_input[1024] = "";
 pthread_mutex_t mutex_buffer = PTHREAD_MUTEX_INITIALIZER;
@@ -87,6 +85,10 @@ main(int argc, char *argv[])
 {
     // Local variables
     pthread_t cthread;
+    void (*demo_func)(void);
+
+    // Calling current demo's setup function
+    demo_setup(&demo_func, filename);
   
     fd_output = fopen("prog.out", "w+");
     if (fd_output == NULL) {
@@ -96,7 +98,7 @@ main(int argc, char *argv[])
     sleep(1);
 
     // Call the appropriate demo dynamically
-    demo1();
+    (*demo_func)();
    
     running = 0;
     pthread_join(cthread, NULL);

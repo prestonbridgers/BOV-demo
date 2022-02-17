@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 #include <unistd.h>
 #include "bovis_globals.h"
@@ -37,6 +38,15 @@ bad_func(char *str)
     fprintf(fd_output, "After overflow, x = %d\n", x);
 
     return;
+}
+
+/* Setup function as required for all demos.
+ */
+int
+demo_setup(void(**demo_func)(void), char *filename) {
+    *demo_func = demo1;
+    strncpy(filename, __FILE__, 128);
+    return 0;
 }
 
 /* The "main" routine for this demo.

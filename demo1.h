@@ -3,5 +3,6 @@
 
 void    bad_func(char *str);
 void    demo1();
+int     demo_setup(void(**demo_func)(void), char *filename);
 
 #endif
