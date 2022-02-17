@@ -49,9 +49,6 @@
 /******************************************************************
  *                        STRUCTS                                 *
  *****************************************************************/
-typedef struct {
-    char buf[255];
-} ThreadArgs;
 
 /******************************************************************
  *                        UI Functions                            *
@@ -67,7 +64,5 @@ char*   trim_whitespace(char *str);
 void    bov_print(char *s);
 void    bov_popup(char *str);
 int     bov_word_length(char *s);
-
-void bad_func();
 
 #endif
