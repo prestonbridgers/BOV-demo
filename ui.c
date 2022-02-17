@@ -287,7 +287,6 @@ void*
 cthread_run(void *arg)
 {
     // Variables
-    ThreadArgs *args = (ThreadArgs*) arg;
     short src_printed = 0;
 
     WINDOW *window_out; // Program output window
