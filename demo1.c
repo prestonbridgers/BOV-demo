@@ -44,16 +44,14 @@ bad_func(char *str)
  */
 int
 demo_setup(void(**demo_func)(void), char *filename) {
-    *demo_func = demo1;
-    strncpy(filename, __FILE__, 128);
     return 0;
 }
 
 /* The "main" routine for this demo.
  */
 void
-demo1() {
-
+demo1(void)
+{
     bov_popup("Welcome to the BOV integer overflow demo!\n\nThe current "
             "value of the integer is 4, however, an unsafe strcpy is writing "
             "a string to memory. The string is larger than the buffer it's being "
@@ -77,11 +75,17 @@ demo1() {
     bov_print("Calling bad_func()...\n");
 
     BEFORE_UNSAFE_CALL();
-    /* bad_func(buffer_input); */
     bad_func("01234567*");
 
     bov_print("Returned from bad_func()...\n");
     bov_print("Program has completed. Press 'q' to exit\n");
     sleep(1);
+    return;
+}
+
+int
+main(int argc, char **argv) {
+    bov_run(demo1, __FILE__);
+    return EXIT_SUCCESS;
 }
 

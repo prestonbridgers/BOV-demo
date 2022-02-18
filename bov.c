@@ -80,15 +80,13 @@ get_user_string() {
 /**
  * Entry point for the program.
  */
-int
-main(int argc, char *argv[])
+void
+bov_run(void(*demo_func)(void), char *demo_filename)
 {
     // Local variables
     pthread_t cthread;
-    void (*demo_func)(void);
 
-    // Calling current demo's setup function
-    demo_setup(&demo_func, filename);
+    strncpy(filename, demo_filename, 128);
   
     fd_output = fopen("prog.out", "w+");
     if (fd_output == NULL) {
@@ -103,5 +101,5 @@ main(int argc, char *argv[])
     running = 0;
     pthread_join(cthread, NULL);
     fclose(fd_output);
-	return EXIT_SUCCESS;	
+	return;
 }

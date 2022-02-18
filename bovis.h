@@ -64,5 +64,6 @@ char*   trim_whitespace(char *str);
 void    bov_print(char *s);
 void    bov_popup(char *str);
 int     bov_word_length(char *s);
+void    bov_run(void(*demo_func)(void), char *demo_filename);
 
 #endif

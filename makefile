@@ -2,10 +2,10 @@ CC=gcc
 CFLAGS=-g -Wall -z execstack -fno-stack-protector
 LFLAGS=-pthread -lpanel -lcurses -lform
 
-bov: main.o ui.o demo1.o
+bov: bov.o ui.o demo1.o
 	$(CC) $(LFLAGS) $^ -o $@
 
-main.o: main.c 
+bov.o: bov.c 
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ui.o: ui.c 
