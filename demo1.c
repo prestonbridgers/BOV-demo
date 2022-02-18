@@ -40,13 +40,6 @@ bad_func(char *str)
     return;
 }
 
-/* Setup function as required for all demos.
- */
-int
-demo_setup(void(**demo_func)(void), char *filename) {
-    return 0;
-}
-
 /* The "main" routine for this demo.
  */
 void
