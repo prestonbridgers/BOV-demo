@@ -22,6 +22,8 @@ FILE *fd_output = NULL;
 int func_line_start = 0;
 char filename[128] = __FILE__;
 
+pthread_t cthread;
+
 char buffer_input[1024] = "";
 pthread_mutex_t mutex_buffer = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond_buffer = PTHREAD_COND_INITIALIZER;
@@ -50,7 +52,7 @@ my_strcpy(char *dest, const char *src)
         fflush(fd_output);
 
         i++;
-        sleep(2);
+        sleep(1);
     }
     // Insert the null character
     dest[i] = '\0';
@@ -82,9 +84,6 @@ get_user_string() {
 void
 bov_run(void(*demo_func)(void), char *demo_filename)
 {
-    // Local variables
-    pthread_t cthread;
-
     strncpy(filename, demo_filename, 128);
   
     fd_output = fopen("prog.out", "w+");
@@ -101,4 +100,15 @@ bov_run(void(*demo_func)(void), char *demo_filename)
     pthread_join(cthread, NULL);
     fclose(fd_output);
 	return;
+}
+
+/* Graceful shutdown function in the case it is needed.
+ */
+void
+bov_shutdown(int sig)
+{
+    running = 0;
+    pthread_join(cthread, NULL);
+    fclose(fd_output);
+    exit(0);
 }
