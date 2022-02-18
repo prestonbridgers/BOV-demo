@@ -8,7 +8,6 @@
 #include <curses.h>
 #include <panel.h>
 #include "bovis.h"
-#include "demo1.h"
 
 /******************************************************************
  *                          GLOBALS                               *
