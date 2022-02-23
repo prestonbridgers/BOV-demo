@@ -105,7 +105,7 @@ bov_run(void(*demo_func)(void), char *demo_filename)
 /* Graceful shutdown function in the case it is needed.
  */
 void
-bov_shutdown(int sig)
+bov_shutdown(void)
 {
     running = 0;
     pthread_join(cthread, NULL);

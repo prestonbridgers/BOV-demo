@@ -13,17 +13,6 @@
 #include "bovis.h"
 #include "demo2.h"
 
-/* Sig sementation fault handler
- */
-void
-sig_seghandler(int sig)
-{
-    bov_popup("You've successfully jumped to the target function\n");
-    fprintf(stderr, "jumped correctly\n");
-    fflush(stderr);
-    bov_shutdown(sig);
-}
-
 /**
  * Function that calls an unsafe subroutine.
  */
@@ -48,6 +37,11 @@ target(void)
 {
     bov_print("You've jumped into the target function!\n");
     fprintf(stderr, "Successfully jumped\n");
+
+    bov_popup("You've successfully jumped to the target function\n");
+    fprintf(stderr, "jumped correctly\n");
+    fflush(stderr);
+    bov_shutdown();
     return;
 }
 
@@ -79,7 +73,7 @@ demo2(void)
     bov_print("Calling bad_func()...\n");
 
     BEFORE_UNSAFE_CALL();
-    bad_func("0000000000000000\x73\x7bUUUU");
+    bad_func("0000000000000000\x03\x7bUUUU");
 
     bov_print("Returned from bad_func()...\n");
     bov_print("Program has completed. Press 'q' to exit\n");
@@ -89,7 +83,6 @@ demo2(void)
 
 int
 main(int argc, char **argv) {
-    signal(SIGSEGV, bov_shutdown);
     bov_run(demo2, __FILE__);
     return EXIT_SUCCESS;
 }
