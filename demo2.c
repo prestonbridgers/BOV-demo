@@ -79,7 +79,7 @@ demo2(void)
     bov_print("Calling bad_func()...\n");
 
     BEFORE_UNSAFE_CALL();
-    bad_func("0000000000000000\x6e\x7bUUUU");
+    bad_func("0000000000000000\x73\x7bUUUU");
 
     bov_print("Returned from bad_func()...\n");
     bov_print("Program has completed. Press 'q' to exit\n");
