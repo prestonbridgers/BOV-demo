@@ -189,57 +189,58 @@ print_line(WINDOW *win, uint64_t *line_ptr, int ypos)
     /* fprintf(stderr, "%#010" PRIx32 "\n", low); */
     /* fprintf(stderr, "%#018" PRIx64 "\n\n", *line_ptr); */
 
-    uint64_t high = (0xffffffff00000000 & *line_ptr) >> 32;
-    uint64_t low  = (0x00000000ffffffff & *line_ptr);
     char *line_ptr_v = (char*) line_ptr;
     char *buf_ptr_v  = (char*) buf_ptr;
-    for (int i = 0; i < 2; i++) {
-        line_ptr_v += i * 4;
-        uint32_t mem = low;
-        if (i == 1) mem = high;
-
-        if (line_ptr_v == buf_ptr_v) {
-            wattron(win, COLOR_PAIR(GREEN_PAIR));
-            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
-            wprintw(win, " <- Buffer");
-            wattroff(win, COLOR_PAIR(GREEN_PAIR));
-        }
-        //TODO: Calculate buf_ptr + 1 based on the size of the buffer that should
-        //      be passed to this function as a paramater.
-        else if (line_ptr_v == buf_ptr_v + 4) {
-            wattron(win, COLOR_PAIR(GREEN_PAIR));
-            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
-            wattroff(win, COLOR_PAIR(GREEN_PAIR));
-        }
-        else if (line_ptr_v == (char*)ret_ptr || line_ptr_v == (char*) ret_ptr + 4) {
-            wattron(win, COLOR_PAIR(RED_PAIR));
-            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
-            wprintw(win, " <- Ret. Addr.");
-            wattroff(win, COLOR_PAIR(RED_PAIR));
-        }
-        else if (line_ptr_v == (char*)int_ptr) {
-            wattron(win, COLOR_PAIR(YELLOW_PAIR));
-            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
-            wprintw(win, " <- int x");
-            wattroff(win, COLOR_PAIR(YELLOW_PAIR));
-        }
-        // BETWEEN END OF BUFFER AND RET ADDR
-        else if (line_ptr_v > buf_ptr_v + 4 && line_ptr_v < (char*) ret_ptr) {
-            wattron(win, COLOR_PAIR(YELLOW_PAIR));
-            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
-            wattroff(win, COLOR_PAIR(YELLOW_PAIR));
-        }
-        else if (line_ptr_v == (char*)stack_ptr) {
-            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
-            wprintw(win, " <- %%RSP");
-        }
-        else {
-            mvwprintw(win, ypos + 2, 2, "%#010" PRIx32, mem);
-        }
-
-        ypos += 1;
-        wprintw(win, "\n");
+    if (line_ptr_v == buf_ptr_v) {
+        wattron(win, COLOR_PAIR(GREEN_PAIR));
+        /* mvwprintw(win, ypos, 2, "%18p: %#018" PRIx64, *line_ptr, *line_ptr); */
+        mvwprintw(win, ypos, 2, "0x%016x: %#018" PRIx64, line_ptr, *line_ptr);
+        wprintw(win, " <- Buffer");
+        wattroff(win, COLOR_PAIR(GREEN_PAIR));
     }
+    //TODO: Calculate buf_ptr + 1 based on the size of the buffer that should
+    //      be passed to this function as a paramater.
+    /* else if (line_ptr_v == buf_ptr_v) { */
+    /*     wattron(win, COLOR_PAIR(GREEN_PAIR)); */
+    /*     mvwprintw(win, ypos, 2, "0x%016x: %#018" PRIx64, line_ptr, *line_ptr); */
+    /*     wattroff(win, COLOR_PAIR(GREEN_PAIR)); */
+    /* } */
+    else if (line_ptr_v == (char*)ret_ptr) {
+        wattron(win, COLOR_PAIR(RED_PAIR));
+        /* mvwprintw(win, ypos, 2, "%#018" PRIx64, *line_ptr); */
+        /* mvwprintw(win, ypos, 2, "%#018: " PRIx64 "%#018" PRIx64, line_ptr, *line_ptr); */
+        mvwprintw(win, ypos, 2, "0x%016x: %#018" PRIx64, line_ptr, *line_ptr);
+        wprintw(win, " <- Ret. Addr.");
+        wattroff(win, COLOR_PAIR(RED_PAIR));
+    }
+    else if (line_ptr_v == (char*)int_ptr) {
+        wattron(win, COLOR_PAIR(YELLOW_PAIR));
+        /* mvwprintw(win, ypos, 2, "%#018" PRIx64, *line_ptr); */
+        /* mvwprintw(win, ypos, 2, "%#018: " PRIx64 "%#018" PRIx64, line_ptr, *line_ptr); */
+        mvwprintw(win, ypos, 2, "0x%016x: %#018" PRIx64, line_ptr, *line_ptr);
+        wprintw(win, " <- int x");
+        wattroff(win, COLOR_PAIR(YELLOW_PAIR));
+    }
+    // BETWEEN END OF BUFFER AND RET ADDR
+    else if (line_ptr_v > buf_ptr_v && line_ptr_v < (char*) ret_ptr) {
+        wattron(win, COLOR_PAIR(YELLOW_PAIR));
+        /* mvwprintw(win, ypos, 2, "%#018" PRIx64, *line_ptr); */
+        /* mvwprintw(win, ypos, 2, "%#018: " PRIx64 "%#018" PRIx64, line_ptr, *line_ptr); */
+        mvwprintw(win, ypos, 2, "0x%016x: %#018" PRIx64, line_ptr, *line_ptr);
+        wattroff(win, COLOR_PAIR(YELLOW_PAIR));
+    }
+    else if (line_ptr_v == (char*)stack_ptr) {
+        /* mvwprintw(win, ypos, 2, "%#018" PRIx64, *line_ptr); */
+        /* mvwprintw(win, ypos, 2, "%#018: " PRIx64 "%#018" PRIx64, line_ptr, *line_ptr); */
+        mvwprintw(win, ypos, 2, "0x%016x: %#018" PRIx64, line_ptr, *line_ptr);
+        wprintw(win, " <- %%RSP");
+    }
+    else {
+        /* mvwprintw(win, ypos, 2, "%#018" PRIx64, *line_ptr); */
+        mvwprintw(win, ypos, 2, "0x%016x: %#018" PRIx64, line_ptr, *line_ptr);
+    }
+
+    wprintw(win, "\n");
 }
 
 /* Prints 8 byte lines from the stack starting at address stack_ptr.
@@ -261,7 +262,7 @@ print_stack(WINDOW *win)
     int i = 0;
     for (i = 0; i < NUM_LINES; i++)
     {
-        print_line(win, tmp, i*2);
+        print_line(win, tmp, i);
         tmp++;
     }
     return;
