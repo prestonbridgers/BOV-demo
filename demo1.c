@@ -20,10 +20,10 @@ bad_func(char *str)
 {
     func_line_start = __LINE__; /* IGNORE */
 
-    char pad1[4];
+    char pad1[4];   /* IGNORE */
     int x = 4;      // Initializing an integer
     char buf[8];    // Declaring a buffer of size 8 bytes
-    char pad2[4];
+    char pad2[4];   /* IGNORE */
 
     GET_BUF_PTR(buf); /* IGNORE */
     GET_INT_PTR(x);   /* IGNORE */
