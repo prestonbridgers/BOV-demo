@@ -2,18 +2,33 @@ CC=gcc
 CFLAGS=-g -Wall -z execstack -fno-stack-protector
 LFLAGS=-pthread -lpanel -lcurses -lform
 
-bov: main.o ui.o
+all: demo1 demo2
+
+demo1: bov.o ui.o demo1.o
 	$(CC) $(LFLAGS) $^ -o $@
 
-main.o: main.c 
+demo2: bov.o ui.o demo2.o
+	$(CC) $(LFLAGS) $^ -o $@
+
+bov.o: bov.c 
 	$(CC) $(CFLAGS) -c $< -o $@
 
 ui.o: ui.c 
 	$(CC) $(CFLAGS) -c $< -o $@
 
-run:
-	@./bov 2> err.log
+demo1.o: demo1.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+demo2.o: demo2.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+run1:
+	@./demo1 2> err.log
+
+run2:
+	@./demo2 2> err.log
 
 clean:
-	rm bov
+	rm demo1
+	rm demo2
 	rm *.o
