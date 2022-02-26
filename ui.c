@@ -124,47 +124,47 @@ bov_popup(char *str)
  * window - The nCurses window to be printed
  */
 void
-print_current_function(WINDOW *window, char *filename)
+print_current_function(WINDOW *win, char *filename)
 {
     FILE *fd = fopen(filename, "r");
     int current_line = 0;
-    char c;
+    char *line;
+    int maxBuf = 256;
     short queue = 0;
     short queue_initialized = 0;
-    int cursX = 1;
-    int cursY = 1;
+    int y_pos = 1;
 
+    line = malloc(maxBuf);
+
+    // Fast foward to the first line of the function
     while (current_line != func_line_start - 4) {
-        c = fgetc(fd);
-        if (c == '\n') {
-            current_line++;
-        }
+        getline(&line, (size_t*) &maxBuf, fd);
+        current_line++;
     }
 
-    c = fgetc(fd);
-    while (c != EOF) {
-        switch (c) {
-            case '{':
-                queue++;
-                queue_initialized = 1;
-                break;
-            case '}':
-                queue--;
-                break;
+    // Loop prints each line of the function
+    while (getline(&line, (size_t*) &maxBuf, fd) > 0)
+    {
+        // Ignore lines with a /* IGNORE */ tag in them
+        if (strstr(line, "/* IGNORE */") != NULL)
+            continue;
+
+        // Queue management to tell when we're out of the function
+        if (strstr(line, "{") != NULL) {
+            queue++;
+            queue_initialized = 1;
+        }
+        if (strstr(line, "}") != NULL) {
+            queue--;
         }
 
-        mvwaddch(window, cursY, cursX++, c);
-        if (c == '\n') {
-            cursX = 1;
-            cursY++;
-        }
+        mvwaddstr(win, y_pos, 1, line);
+        y_pos++;
 
+        // Stop once we're out of the function
         if (queue == 0 && queue_initialized) {
-            putchar('\n');
             break;
         }
-
-        c = fgetc(fd);
     }
 
     fclose(fd);
