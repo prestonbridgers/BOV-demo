@@ -2,6 +2,7 @@ CC=gcc
 CFLAGS=-g -Wall -z execstack -fno-stack-protector
 LFLAGS=-pthread -lpanel -lcurses -lform
 
+all: demo1 demo2
 
 demo1: bov.o ui.o demo1.o
 	$(CC) $(LFLAGS) $^ -o $@
