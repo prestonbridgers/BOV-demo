@@ -16,12 +16,15 @@
  * Function that calls an unsafe subroutine.
  */
 void
-bad_func(char *str)
+bad_func()
 {
     func_line_start = __LINE__; /* IGNORE */
+    // This demo illustrates how a buffer overflow can
+    // be used to modify another variable in the stack.
 
+    char *str = "01234567*"; // Will be copied into buf
     char pad1[4];   /* IGNORE */
-    int x = 4;      // Initializing an integer
+    int x = 4;      // Will be overwritten by the my_strcpy
     char buf[8];    // Declaring a buffer of size 8 bytes
     char pad2[4];   /* IGNORE */
 
@@ -32,8 +35,6 @@ bad_func(char *str)
     fprintf(fd_output, "Before overflow, x = %d\n", x);
 
     // This my_strcpy function causes the buffer overflow:
-    // buf size is 8 bytes
-    // str = "012345679" (10 bytes including the null character)
     my_strcpy(buf, str);
 
     // Print value of x before the overflow occurs
@@ -67,12 +68,9 @@ demo1(void)
             "but it has been slowed down copying one character every 2 seconds.\n\n\n\n"
             "Press any key to close this popup and begin the program's execution.");
 
-    bov_print("Calling bad_func()...\n");
-
     BEFORE_UNSAFE_CALL();
     bad_func("01234567*");
 
-    bov_print("Returned from bad_func()...\n");
     bov_print("Program has completed. Press 'q' to exit\n");
     sleep(1);
     return;
