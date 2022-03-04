@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-g -Wall -z execstack -fno-stack-protector
-LFLAGS=-pthread -lpanel -lcurses -lform
+CFLAGS=-g -Wall -z execstack -fno-stack-protector -no-pie
+LFLAGS=-pthread -lpanel -lcurses -lform -fno-stack-protector -no-pie
 
 all: demo1 demo2
 
