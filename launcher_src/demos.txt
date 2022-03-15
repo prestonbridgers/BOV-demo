@@ -1,2 +1,0 @@
-demo1 | This one does a simple overflow of an integer.
-demo2 | This one overflows a return address to transfer control to an uninted piece of code.
