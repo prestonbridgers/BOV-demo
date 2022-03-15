@@ -21,6 +21,7 @@ read_demo_meta()
    int num_lines = 0;
    FILE *fd = fopen(filename, "r");
 
+   // Error checking
    if (fd == NULL) {
       perror(strerror(errno));
       exit(1);
@@ -105,6 +106,7 @@ main(int argc, char **argv)
    WINDOW *win;
    int x_win, y_win;
    int h_win, w_win;
+   char *win_title = "BOV Launcher: Please select a demo";
 
    // nCurses initialization
    initscr();
@@ -113,8 +115,8 @@ main(int argc, char **argv)
    noecho();
    keypad(stdscr, TRUE);
 
-   w_win = get_largest_choice_width() + 2;
-   h_win = num_demos + 2;
+   w_win = get_largest_choice_width() + 10;
+   h_win = num_demos + 2 + 6;
    x_win = COLS / 2 - (w_win / 2);
    y_win = LINES / 2 - h_win / 2;
    win = newwin(h_win, w_win, y_win, x_win);
@@ -128,10 +130,13 @@ main(int argc, char **argv)
 
    my_menu = new_menu(my_items);
    set_menu_win(my_menu, win);
-   set_menu_sub(my_menu, win);
+   set_menu_sub(my_menu, derwin(win, num_demos, get_largest_choice_width(), h_win / 2 - num_demos / 2, w_win / 2 - get_largest_choice_width() / 2));
 
-   mvprintw(LINES - 2, 0, "Press 'q' to Exit");
+   mvprintw(LINES - 2, 4, "Press 'q' to Exit");
    post_menu(my_menu);
+
+   box(win, '|', '-');
+   mvwaddstr(win, 0, (w_win / 2) -  (strlen(win_title) / 2), win_title);
 
    wrefresh(stdscr);
    wrefresh(win);
@@ -157,8 +162,6 @@ main(int argc, char **argv)
             env[0] = calloc(256, sizeof(char));
             strncpy(env[0], chosen_item, 256);
             env[1] = NULL;
-            free_item(my_items[0]);
-            free_item(my_items[1]);
             endwin();
             execvp(chosen_item, env);
             perror(strerror(errno));
@@ -167,9 +170,6 @@ main(int argc, char **argv)
       }
       wrefresh(win);
    }
-
-   
-
 
    // nCurses cleanup
    for (i = 0; i < num_demos; i++) {
