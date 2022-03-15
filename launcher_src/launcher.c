@@ -6,25 +6,102 @@
 #include <curses.h>
 #include <menu.h>
 
+/* GLOBALS */
+char **choices;
+char **descs;
+int num_demos;
+char *filename = "demos.txt";
+
+void
+read_demo_meta()
+{
+   char *line = NULL;
+   size_t n = 0;
+   int i;
+   int num_lines = 0;
+   FILE *fd = fopen(filename, "r");
+
+   if (fd == NULL) {
+      perror(strerror(errno));
+      exit(1);
+   }
+
+   // Getting the total number of lines;
+   while(getline(&line, &n, fd) != -1) {
+      num_lines++;
+      free(line);
+      line = NULL;
+   }
+
+   // Mallocing the choices and descs lists
+   choices = calloc(num_lines, sizeof *choices);
+   descs = calloc(num_lines, sizeof *choices);
+   for (i = 0; i < num_lines; i++) {
+      choices[i] = NULL;
+      descs[i] = NULL;
+   }
+
+   // Moving back to the beginning of the file
+   rewind(fd);
+
+   // Filling choices and descs lists
+   i = 0;
+   while(getline(&line, &n, fd) != -1) {
+      // Getting the demo path
+      char *tok = strtok(line, "|");
+      fprintf(stderr, "token 1: %s\n", tok);
+      choices[i] = strdup(tok);
+
+      // Getting the demo description
+      tok = strtok(NULL, "|");
+      fprintf(stderr, "token 2: %s\n", tok);
+      descs[i] = strdup(tok);
+
+      // Trimming the trailing \n char off of the description
+      descs[i][strlen(descs[i]) - 1] = '\0';
+
+      free(line);
+      line = NULL;
+      i++;
+   }
+
+   // Setting the global num_demos
+   num_demos = num_lines;
+
+   free(line);
+   fclose(fd);
+}
+
+int
+get_largest_choice_width() {
+   int i;
+   char line[COLS];
+   int largest = 0;
+
+   for (i = 0; i < num_demos; i++) {
+      strncpy(line, choices[i], COLS);
+      strcat(line, " | ");
+      strcat(line, descs[i]);
+      fprintf(stderr, "Length of line %d: %ld\n", i, strlen(line));
+
+      if (strlen(line) > largest) {
+         largest = strlen(line);
+      }
+   }
+
+   return largest;
+}
+
 int
 main(int argc, char **argv)
 {
-   // Variables
-   char *choices[] = {
-      "./demo1",
-      "./demo2"
-   };
-
-   char *desc[] = {
-      "| Simple integer overflow",
-      "| Overwriding a return address"
-   };
+   read_demo_meta();
 
    ITEM **my_items;
    char *chosen_item;
    int c;
    MENU *my_menu;
-   int n_choices, i;
+   int i;
    WINDOW *win;
    int x_win, y_win;
    int h_win, w_win;
@@ -36,27 +113,24 @@ main(int argc, char **argv)
    noecho();
    keypad(stdscr, TRUE);
 
-   n_choices = (sizeof choices) / (sizeof choices[0]);
-
-   x_win = COLS / 2 - 25;
-   y_win = LINES / 2 - (sizeof choices) / 2;
-   h_win = n_choices + 2;
-   w_win = 50;
+   w_win = get_largest_choice_width() + 2;
+   h_win = num_demos + 2;
+   x_win = COLS / 2 - (w_win / 2);
+   y_win = LINES / 2 - h_win / 2;
    win = newwin(h_win, w_win, y_win, x_win);
 
-   my_items = calloc(n_choices + 1, sizeof *my_items);
-   for (i = 0; i < n_choices; i++) {
-      my_items[i] = new_item(choices[i], desc[i]);
+   my_items = calloc(num_demos + 1, sizeof *my_items);
+   for (i = 0; i < num_demos; i++) {
+      my_items[i] = new_item(choices[i], descs[i]);
       set_item_userptr(my_items[i], choices[i]);
    }
-   my_items[n_choices] = NULL;
+   my_items[num_demos] = NULL;
 
    my_menu = new_menu(my_items);
    set_menu_win(my_menu, win);
    set_menu_sub(my_menu, win);
 
    mvprintw(LINES - 2, 0, "Press 'q' to Exit");
-
    post_menu(my_menu);
 
    wrefresh(stdscr);
@@ -98,8 +172,12 @@ main(int argc, char **argv)
 
 
    // nCurses cleanup
-   free_item(my_items[0]);
-   free_item(my_items[1]);
+   for (i = 0; i < num_demos; i++) {
+      free_item(my_items[i]);
+   }
+   free(my_items);
+   free_menu(my_menu);
+   delwin(win);
    endwin();
    return EXIT_SUCCESS;
 }
