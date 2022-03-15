@@ -4,7 +4,7 @@ LFLAGS=-pthread -lpanel -lcurses -lform -fno-stack-protector -fno-pie
 
 all: demo1 demo2 launcher
 
-launcher:
+launcher: launcher_src/launcher.c
 	make -C launcher_src
 
 demo1: bov.o ui.o demo1.o

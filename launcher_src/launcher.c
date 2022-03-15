@@ -12,14 +12,12 @@ main(int argc, char **argv)
    // Variables
    char *choices[] = {
       "./demo1",
-      "./demo2",
-      "Exit"
+      "./demo2"
    };
 
    char *desc[] = {
       "| Simple integer overflow",
-      "| Overwriding a return address",
-      "",
+      "| Overwriding a return address"
    };
 
    ITEM **my_items;
@@ -57,14 +55,14 @@ main(int argc, char **argv)
    set_menu_win(my_menu, win);
    set_menu_sub(my_menu, win);
 
-   mvprintw(LINES - 2, 0, "F1 to Exit");
+   mvprintw(LINES - 2, 0, "Press 'q' to Exit");
 
    post_menu(my_menu);
 
    wrefresh(stdscr);
    wrefresh(win);
 
-   while ((c = getch()) != KEY_F(1)) {
+   while ((c = getch()) != 'q') {
       switch (c) {
          case KEY_DOWN:
             menu_driver(my_menu, REQ_DOWN_ITEM);
