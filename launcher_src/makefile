@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=-Wall -g
 LFLAGS=-lcurses -lmenu
 
 default: launcher
