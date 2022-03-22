@@ -30,7 +30,7 @@ read_demo_meta()
    // Getting the total number of lines;
    while(getline(&line, &n, fd) != -1) {
       num_lines++;
-      free(line);
+      //free(line);
       line = NULL;
    }
 
@@ -61,7 +61,7 @@ read_demo_meta()
       // Trimming the trailing \n char off of the description
       descs[i][strlen(descs[i]) - 1] = '\0';
 
-      free(line);
+      //free(line);
       line = NULL;
       i++;
    }
@@ -69,7 +69,7 @@ read_demo_meta()
    // Setting the global num_demos
    num_demos = num_lines;
 
-   free(line);
+   //free(line);
    fclose(fd);
 }
 

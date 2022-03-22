@@ -22,7 +22,7 @@ bad_func()
     // This demo illustrates how a buffer overflow can
     // be used to modify another variable in the stack.
 
-    char *str = "01234567*"; // Will be copied into buf
+    char *str = "012345678901*"; // Will be copied into buf
     char pad1[4];   /* IGNORE */
     int x = 4;      // Will be overwritten by the my_strcpy
     char buf[8];    // Declaring a buffer of size 8 bytes
