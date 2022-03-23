@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-g -Wall -z execstack -fno-stack-protector -fno-pie
-LFLAGS=-pthread -lpanel -lcurses -lform -fno-stack-protector -fno-pie
+LFLAGS=-pthread -lpanel -lcurses -lform -z execstack -fno-stack-protector -fno-pie
 
 all: demo1 demo2 launcher
 

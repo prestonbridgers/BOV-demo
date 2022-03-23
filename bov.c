@@ -98,7 +98,7 @@ bov_run(void(*demo_func)(void), char *demo_filename)
    
     running = 0;
     pthread_join(cthread, NULL);
-    fclose(fd_output);
+    //fclose(fd_output);
 	return;
 }
 
