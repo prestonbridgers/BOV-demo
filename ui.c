@@ -460,7 +460,7 @@ cthread_run(void *arg)
         usleep(250000);
     }
 
-    //getch();
+    getch();
     // Cleanup
     del_panel(panel_out);
     del_panel(panel_src);
