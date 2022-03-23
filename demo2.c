@@ -43,6 +43,8 @@ target(void)
     bov_popup("You've successfully jumped to the target function\n");
     fprintf(stderr, "jumped correctly\n");
     fflush(stderr);
+
+    sleep(1);
     bov_shutdown();
     return;
 }
@@ -75,7 +77,7 @@ demo2(void)
     bov_print("Calling bad_func()...\n");
 
     BEFORE_UNSAFE_CALL();
-    bad_func("000000000000000000000000\x47\x32\x40");
+    bad_func("000000000000000000000000\x38\x32\x40");
     // 0x403aae <- Addr of target func
 
 
