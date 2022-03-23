@@ -48,7 +48,7 @@ bad_func()
 void
 demo1(void)
 {
-    bov_popup("Welcome to the BOV integer overflow demo!\n\nThe current "
+    /*bov_popup("Welcome to the BOV integer overflow demo!\n\nThe current "
             "value of the integer is 4, however, an unsafe strcpy is writing "
             "a string to memory. The string is larger than the buffer it's being "
             "written into, so it will overwrite the integer's value to 42. Note: "
@@ -66,7 +66,22 @@ demo1(void)
             "function executes and watch it overwrite the integer below it. "
             "The my_strcpy() function works the same as the normal strcpy() function, "
             "but it has been slowed down copying one character every 2 seconds.\n\n\n\n"
-            "Press any key to close this popup and begin the program's execution.");
+            "Press any key to close this popup and begin the program's execution.");*/
+   if (popup_string != NULL) {
+      free(popup_string);
+   }
+
+   pthread_mutex_lock(&mutex_popup);
+   popup_string = strdup("Test");
+   fprintf(stderr, "%s\n", popup_string);
+   popup_requested = 1;
+   fprintf(stderr, "M: input requested from T1\n");
+   while (!popup_done) {
+       fprintf(stderr, "M: Waiting for T1 to fill buffer\n");
+       pthread_cond_wait(&cond_popup, &mutex_popup);
+   }
+   fprintf(stderr, "M: Received the go ahead from T1\n");
+   pthread_mutex_unlock(&mutex_popup);
 
     BEFORE_UNSAFE_CALL();
     bad_func("01234567*");

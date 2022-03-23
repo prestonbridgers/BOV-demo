@@ -61,7 +61,7 @@ bov_print(char *s) {
  * str - The string to be printed in the popup.
  */
 void
-bov_popup(char *str)
+bov_ui_popup(char *str)
 {
     WINDOW *win;
     PANEL *pan;
@@ -80,6 +80,7 @@ bov_popup(char *str)
 
     win = newwin(height, width, ypos, xpos);
     pan = new_panel(win);
+    top_panel(pan);
 
     box(win, 0,0);
 
@@ -112,8 +113,9 @@ bov_popup(char *str)
     doupdate();
     getch();
     
-    delwin(win);
-    del_panel(pan);
+
+//    delwin(win);
+//    del_panel(pan);
     return;
 }
 
@@ -421,6 +423,23 @@ cthread_run(void *arg)
             pthread_cond_signal(&cond_buffer);
         }
         pthread_mutex_unlock(&mutex_buffer);
+
+        // Check for popup_needed
+        pthread_mutex_lock(&mutex_popup);
+        if (popup_requested) {
+           fprintf(stderr, "FROM UI: %s\n", popup_string);
+           bov_ui_popup(popup_string);
+
+           // Bring the old windows to the front:
+           top_panel(panel_out);
+           top_panel(panel_src);
+           top_panel(panel_mem);
+
+           popup_done = 1;
+           popup_requested = 0;
+           pthread_cond_signal(&cond_popup);
+        }
+        pthread_mutex_unlock(&mutex_popup);
         
         // Update memory panel
         if (update_mem) {

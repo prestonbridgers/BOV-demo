@@ -13,8 +13,13 @@ extern char filename[128];
 extern char buffer_input[1024];
 extern pthread_mutex_t mutex_buffer;
 extern pthread_cond_t cond_buffer;
+extern pthread_mutex_t mutex_popup;
+extern pthread_cond_t cond_popup;
 extern short input_requested;
 extern short input_received;
+extern short popup_requested;
+extern short popup_done;
+extern char *popup_string;
 extern short update_mem;
 
 

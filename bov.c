@@ -27,8 +27,13 @@ pthread_t cthread;
 char buffer_input[1024] = "";
 pthread_mutex_t mutex_buffer = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond_buffer = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t mutex_popup = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond_popup = PTHREAD_COND_INITIALIZER;
 short input_requested = 0;
 short input_received = 0;
+short popup_requested = 0;
+char *popup_string = NULL;
+short popup_done = 0;
 short update_mem = 1;
 
 /**
@@ -78,6 +83,28 @@ get_user_string() {
     pthread_mutex_unlock(&mutex_buffer);
 }
 
+/*
+ */
+void
+bov_popup(char *string)
+{
+   if (popup_string != NULL) {
+      free(popup_string);
+   }
+
+   pthread_mutex_lock(&mutex_popup);
+   popup_string = strdup(string);
+   fprintf(stderr, "%s\n", popup_string);
+   popup_requested = 1;
+   fprintf(stderr, "M: input requested from T1\n");
+   while (!popup_done) {
+       fprintf(stderr, "M: Waiting for T1 to fill buffer\n");
+       pthread_cond_wait(&cond_popup, &mutex_popup);
+   }
+   fprintf(stderr, "M: Received the go ahead from T1\n");
+   pthread_mutex_unlock(&mutex_popup);
+}
+
 /**
  * Entry point for the program.
  */
@@ -98,7 +125,7 @@ bov_run(void(*demo_func)(void), char *demo_filename)
    
     running = 0;
     pthread_join(cthread, NULL);
-    //fclose(fd_output);
+    fclose(fd_output);
 	return;
 }
 
