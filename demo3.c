@@ -8,46 +8,49 @@
 #include <string.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <signal.h>
 #include "bovis_globals.h"
 #include "bovis.h"
-#include "demo1.h"
+#include "demo2.h"
 
 /**
  * Function that calls an unsafe subroutine.
  */
 void
-bad_func()
+bad_func(char *str)
 {
     func_line_start = __LINE__; /* IGNORE */
-    // This demo illustrates how a buffer overflow can
-    // be used to modify another variable in the stack.
 
-    char *str = "01234567*"; // Will be copied into buf
-    char pad[2]; /* IGNORE */
-    long x = 4;      // Will be overwritten by the my_strcpy
     char buf[8];    // Declaring a buffer of size 8 bytes
 
     GET_BUF_PTR(buf); /* IGNORE */
-    GET_INT_PTR(x);   /* IGNORE */
 
-    fprintf(fd_output, "Before overflow, x = %ld\n", x);
-
-    // This my_strcpy function causes the buffer overflow:
     my_strcpy(buf, str);
 
-    fprintf(fd_output, "After overflow, x = %ld\n", x);
+    return;
+}
 
-    sleep(3); /* IGNORE */ 
-    char *tmp = malloc(128 * (sizeof *tmp)); /* IGNORE */
-    sprintf(tmp, "The value of x is now %ld\n\n\nPress any key to close this demonstration...", x); /* IGNORE */
-    bov_popup(tmp); /* IGNORE */
+/* The target function to be inadvertently jumped into via input string.
+ */
+void
+target(void)
+{
+    bov_print("You've jumped into the target function!\n");
+    fprintf(stderr, "Successfully jumped\n");
+
+    bov_popup("You've successfully jumped to the target function\n\n\nPress any key to exit this demonstration...");
+    fprintf(stderr, "jumped correctly\n");
+    fflush(stderr);
+
+    sleep(1);
+    bov_shutdown();
     return;
 }
 
 /* The "main" routine for this demo.
  */
 void
-demo1(void)
+demo2(void)
 {
     bov_popup("Welcome to the BOV integer overflow demo!\n\nThe current "
             "value of the integer is 4, however, an unsafe strcpy is writing "
@@ -69,9 +72,14 @@ demo1(void)
             "but it has been slowed down copying one character every 2 seconds.\n\n\n\n"
             "Press any key to close this popup and begin the program's execution.");
 
-    BEFORE_UNSAFE_CALL();
-    bad_func();
+    bov_print("Calling bad_func()...\n");
 
+    BEFORE_UNSAFE_CALL();
+    func_line_start = 40;
+    bad_func("000000000000000000000000\x43\x32\x40");
+
+
+    bov_print("Returned from bad_func()...\n");
     bov_print("Program has completed. Press 'q' to exit\n");
     sleep(1);
     return;
@@ -79,7 +87,7 @@ demo1(void)
 
 int
 main(int argc, char **argv) {
-    bov_run(demo1, __FILE__);
+    bov_run(demo2, __FILE__);
     return EXIT_SUCCESS;
 }
 

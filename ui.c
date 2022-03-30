@@ -341,7 +341,7 @@ cthread_run(void *arg)
     // Window y positions
     uint16_t y_src = 0;
     uint16_t y_mem = 0;
-    uint16_t y_out = h_src - 1;
+    uint16_t y_out = h_src;
 
     // Setup inotify
     int inotify_fd, inotify_wd;
@@ -460,7 +460,7 @@ cthread_run(void *arg)
         usleep(250000);
     }
 
-    getch();
+    //getch();
     // Cleanup
     del_panel(panel_out);
     del_panel(panel_src);

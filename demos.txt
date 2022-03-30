@@ -1,2 +1,3 @@
 ./demo1|This one does a simple overflow of an integer.
-./demo2|This one overflows a return address to transfer control to an uninted piece of code.
+./demo2|This one overflows a return address with an invalid address and causes a segfault.
+./demo3|This one overflows a return address to transfer control to an uninted piece of code.

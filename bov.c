@@ -15,7 +15,7 @@
 
 uint8_t running = 1;
 uint64_t *ret_ptr = NULL;
-uint64_t *stack_ptr = NULL;
+uint64_t *stack_ptr;
 uint64_t *buf_ptr = NULL;
 uint64_t *int_ptr = NULL;
 FILE *fd_output = NULL;
@@ -112,6 +112,7 @@ void
 bov_run(void(*demo_func)(void), char *demo_filename)
 {
     strncpy(filename, demo_filename, 128);
+    stack_ptr = NULL;
   
     fd_output = fopen("prog.out", "w+");
     if (fd_output == NULL) {
