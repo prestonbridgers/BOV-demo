@@ -34,7 +34,7 @@ bad_func(char *str)
 {
     func_line_start = __LINE__; /* IGNORE */
 
-    // This functionw as invoked as follows:
+    // This function is invoked as follows:
     // bad_func("000000000000000000000000\x52\x32\xff");
     // The return address is being overwritten with the address: 0xff3252
     // (Notice that the bytes are reversed due to the address being little endien)
@@ -47,23 +47,6 @@ bad_func(char *str)
     // overflow (the strcpy function in the C standard library behaves the same way)
     my_strcpy(buf, str);
 
-    return;
-}
-
-/* The target function to be inadvertently jumped into via input string.
- */
-void
-target(void)
-{
-    bov_print("You've jumped into the target function!\n");
-    fprintf(stderr, "Successfully jumped\n");
-
-    bov_popup("You've successfully jumped to the target function\n");
-    fprintf(stderr, "jumped correctly\n");
-    fflush(stderr);
-
-    sleep(1);
-    bov_shutdown();
     return;
 }
 
@@ -83,7 +66,6 @@ demo2(void)
     bov_print("Calling bad_func()...\n");
 
     BEFORE_UNSAFE_CALL();
-    func_line_start = 40;
     bad_func("000000000000000000000000\x52\x32\xff");
 
 
