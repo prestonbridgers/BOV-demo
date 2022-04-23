@@ -14,14 +14,19 @@
 ## Install
 
 ```sh
-make
+make all
 ```
 
 ## Usage
 
+The following command runs the launcher:
+
 ```sh
 make run
 ```
+
+Select the demonstration you want to run with the arrow keys, and press ENTER to
+run the demo.
 
 ## Author
 
