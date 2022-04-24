@@ -22,6 +22,7 @@ git clone https://github.com/prestonbridgers/BOV-demo.git
 ## Compilation
 
 ```sh
+cd BOV-demo
 make all
 ```
 
