@@ -11,7 +11,15 @@
 
 - nCurses
 
-## Install
+## Download
+
+Clone the repository with:
+
+```sh
+git clone https://github.com/prestonbridgers/BOV-demo.git
+```
+
+## Compilation
 
 ```sh
 make all
