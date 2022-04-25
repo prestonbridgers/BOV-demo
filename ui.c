@@ -111,7 +111,19 @@ bov_ui_popup(char *str)
 
     update_panels();
     doupdate();
-    getch();
+    
+    int c;
+    int popup_shown = 1;
+    while ((c = getch()) == 's') {
+      if (popup_shown) {   
+         hide_panel(pan);
+      } else {
+         show_panel(pan);
+      }
+      popup_shown = !popup_shown;
+      update_panels();
+      doupdate();
+    }
     
 
 //    delwin(win);
