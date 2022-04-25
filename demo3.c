@@ -25,7 +25,7 @@ bad_func(char *str)
     // bad_func("000000000000000000000000\x29\x33\x40");
     //
     // The return address is being overwritten with the
-    // address: 0x403240
+    // address: 0x403329
     //
     // This is the address of the function called target.
     // (Notice that the bytes are reversed due to the
