@@ -67,7 +67,7 @@ bov_ui_popup(char *str)
     PANEL *pan;
     int width, height;
     int xpos, ypos;
-    float ratio = 0.75;
+    float ratio = 0.7;
     size_t i;
     size_t xcurs = 1;
     size_t ycurs = 1;

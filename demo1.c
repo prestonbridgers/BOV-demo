@@ -58,7 +58,7 @@ demo1(void)
             "Top Right: The stack in memory. Each line is 4 bytes in memory. "
             "The low addresses start at the top and increase downward. Note: "
             "The buffer is 8 bytes (2 lines highlighted green), an integer is "
-            "4 bytes (just beneath the stack in memory), and the return address "
+            "4 bytes , and the return address "
             "is 8 bytes (highlighted red).\n\n"
             "Bottom: This is the output of the program, it will print the value "
             "of the integer before the buffer begins to be filled and after. "
