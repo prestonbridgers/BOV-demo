@@ -23,7 +23,6 @@ bad_func()
     // be used to modify another variable in the stack.
 
     char *str = "01234567*"; // Will be copied into buf
-    char pad[2]; /* IGNORE */
     long x = 4;      // Will be overwritten by the my_strcpy
     char buf[8];    // Declaring a buffer of size 8 bytes
 
