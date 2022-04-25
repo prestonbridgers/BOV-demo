@@ -20,7 +20,8 @@
 void
 sigsegv_handler(int sig)
 {
-   bov_popup("SIGSEGV signal received!\n\n\nPress any button to close the demonstration...");
+   bov_popup("SIGSEGV signal received!\n\n\nPress any button to close the demonstration...\n"
+             "Press 's' to toggle the visibility of this window.");
    sleep(1);
    bov_shutdown();
    return;
@@ -69,7 +70,7 @@ demo2(void)
             "This is because the bytes of the string's characters are copied all the way down to the function's return address in memory.\n"
             "In this demonstration, an invalid memory address is written in the original return address' place.\n"
             "When the function returns, it tries to read an instruction from the invalid address generating a segmentation fault.\n\n\n"
-            "Press any key to close this popup and begin the program's execution.");
+            "Press any key to close this popup and begin the program's execution.\n");
 
     bov_print("Calling bad_func()...\n");
 

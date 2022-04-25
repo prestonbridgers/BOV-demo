@@ -22,7 +22,7 @@ bad_func(char *str)
     func_line_start = __LINE__; /* IGNORE */
 
     // This function is invoked as follows:
-    // bad_func("000000000000000000000000\x40\x32\x40");
+    // bad_func("000000000000000000000000\x29\x33\x40");
     //
     // The return address is being overwritten with the
     // address: 0x403240
@@ -48,7 +48,8 @@ target(void)
     bov_print("You've jumped into the target function!\n");
     fprintf(stderr, "Successfully jumped\n");
 
-    bov_popup("You've successfully jumped to the target function\n\n\nPress any key to exit this demonstration...");
+    bov_popup("You've successfully jumped to the target function\n\n\nPress any key to exit this demonstration...\n"
+              "Press 's' to toggle the visibility of this window.");
     fprintf(stderr, "jumped correctly\n");
     fflush(stderr);
 
@@ -72,7 +73,7 @@ demo2(void)
     bov_print("Calling bad_func()...\n");
 
     BEFORE_UNSAFE_CALL();
-    bad_func("000000000000000000000000\x40\x32\x40");
+    bad_func("000000000000000000000000\x29\x33\x40");
 
 
     bov_print("Returned from bad_func()...\n");

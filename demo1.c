@@ -38,7 +38,9 @@ bad_func()
 
     sleep(3); /* IGNORE */ 
     char *tmp = malloc(128 * (sizeof *tmp)); /* IGNORE */
-    sprintf(tmp, "The value of x is now %ld\n\n\nPress any key to close this demonstration...", x); /* IGNORE */
+    sprintf(tmp, "The value of x is now %ld\n\n\n"  /* IGNORE */
+                 "Press any key to close this demonstration...\n" /* IGNORE */
+                 "Press 's' to toggle the visibility of this window.", x); /* IGNORE */
     bov_popup(tmp); /* IGNORE */
     return;
 }
