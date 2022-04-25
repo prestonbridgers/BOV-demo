@@ -64,7 +64,7 @@ demo2(void)
 {
     bov_popup("Welcome to the BOV return address overflow demo (part 2)!\n\n"
             "This demonstration works similarly to demo2; however, the return address that is encoded "
-            "in the string is a valid address to a function called target().\n"
+            "in the string is the address of function called target().\n"
             "Notice, in the comments of the Vulnerable Code section how the function is called (the string that is passed) "
             "as well as the command that is provided to find the address of the target() function using objdump.\n\n\n"
             "Press any key to close this popup and begin the program's execution.");
