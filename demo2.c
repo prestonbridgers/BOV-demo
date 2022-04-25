@@ -36,15 +36,23 @@ bad_func(char *str)
 
     // This function is invoked as follows:
     // bad_func("000000000000000000000000\x52\x32\xff");
-    // The return address is being overwritten with the address: 0xff3252
-    // (Notice that the bytes are reversed due to the address being little endien)
+    //
+    // The return address is being overwritten with the
+    // address: 0xff3252
+    //
+    // (Notice that the bytes are reversed due to the
+    // address being little endien)
 
-    char buf[8];    // Declaring a buffer of size 8 bytes (string is 31 bytes long)
+    // Declaring a buffer of size 8 bytes
+    // (str is 31 bytes long)
+    char buf[8];
 
     GET_BUF_PTR(buf); /* IGNORE */
 
-    // This memory UN-safe function writes bytes to the stack with no regard for
-    // overflow (the strcpy function in the C standard library behaves the same way)
+    // This memory UN-safe function writes bytes to
+    // the stack with no regard for overflow (the
+    // strcpy function in the C standard library
+    // behaves the same way)
     my_strcpy(buf, str);
 
     return;
@@ -55,7 +63,7 @@ bad_func(char *str)
 void
 demo2(void)
 {
-    bov_popup("Welcome to the BOV integer overflow demo!\n\n"
+    bov_popup("Welcome to the BOV return address overflow demo (part 1)!\n\n"
             "This demonstration copies a string into a buffer that is too small to fit the whole string.\n"
             "This is called a buffer overflow, and, in this demonstration, the overflow results in a segmentation fault.\n"
             "This is because the bytes of the string's characters are copied all the way down to the function's return address in memory.\n"

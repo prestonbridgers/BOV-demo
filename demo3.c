@@ -23,10 +23,13 @@ bad_func(char *str)
 
     // This function is invoked as follows:
     // bad_func("000000000000000000000000\x40\x32\x40");
-    // The return address is being overwritten with the address: 0x403240
-    // This is the address of the function called target. Confirm with the command:
-    // objdump -d demo3 | grep target
-    // (Notice that the bytes are reversed due to the address being little endien)
+    //
+    // The return address is being overwritten with the
+    // address: 0x403240
+    //
+    // This is the address of the function called target.
+    // (Notice that the bytes are reversed due to the
+    // address being little endien)
 
     char buf[8];    // Declaring a buffer of size 8 bytes
 
@@ -59,7 +62,7 @@ target(void)
 void
 demo2(void)
 {
-    bov_popup("Welcome to the BOV integer overflow demo!\n\n"
+    bov_popup("Welcome to the BOV return address overflow demo (part 2)!\n\n"
             "This demonstration works similarly to demo2; however, the return address that is encoded "
             "in the string is a valid address to a function called target().\n"
             "Notice, in the comments of the Vulnerable Code section how the function is called (the string that is passed) "
