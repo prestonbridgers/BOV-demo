@@ -23,7 +23,6 @@ bad_func()
     // be used to modify another variable in the stack.
 
     char *str = "01234567*"; // Will be copied into buf
-    char pad[2]; /* IGNORE */
     long x = 4;      // Will be overwritten by the my_strcpy
     char buf[8];    // Declaring a buffer of size 8 bytes
 
@@ -39,7 +38,9 @@ bad_func()
 
     sleep(3); /* IGNORE */ 
     char *tmp = malloc(128 * (sizeof *tmp)); /* IGNORE */
-    sprintf(tmp, "The value of x is now %ld\n\n\nPress any key to close this demonstration...", x); /* IGNORE */
+    sprintf(tmp, "The value of x is now %ld\n\n\n"  /* IGNORE */
+                 "Press any key to close this demonstration...\n" /* IGNORE */
+                 "Press 's' to toggle the visibility of this window.", x); /* IGNORE */
     bov_popup(tmp); /* IGNORE */
     return;
 }
@@ -59,7 +60,7 @@ demo1(void)
             "Top Right: The stack in memory. Each line is 4 bytes in memory. "
             "The low addresses start at the top and increase downward. Note: "
             "The buffer is 8 bytes (2 lines highlighted green), an integer is "
-            "4 bytes (just beneath the stack in memory), and the return address "
+            "4 bytes , and the return address "
             "is 8 bytes (highlighted red).\n\n"
             "Bottom: This is the output of the program, it will print the value "
             "of the integer before the buffer begins to be filled and after. "
