@@ -82,7 +82,7 @@ bov_ui_popup(char *str)
     pan = new_panel(win);
     top_panel(pan);
 
-    box(win, 0,0);
+    wborder(win, '|','|','-','-','+','+','+','+');
 
     for (i = 0; i < strlen(str); i++) {
         // IF: between words
@@ -458,9 +458,9 @@ cthread_run(void *arg)
             print_stack(window_mem);
         }
 
-        box(window_out, 0, 0);
-        box(window_src, 0, 0);
-        box(window_mem, 0, 0);
+        wborder(window_out, '|','|','-','-','+','+','+','+');
+        wborder(window_src, '|','|','-','-','+','+','+','+');
+        wborder(window_mem, '|','|','-','-','+','+','+','+');
         print_title(window_out, w_out, "Program Output");
         print_title(window_src, w_src, "Vulnerable Code");
         print_title(window_mem, w_mem, "Stack Memory Dump");

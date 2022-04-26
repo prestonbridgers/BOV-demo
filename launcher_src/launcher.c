@@ -135,7 +135,7 @@ main(int argc, char **argv)
    mvprintw(LINES - 2, 4, "Press 'q' to Exit");
    post_menu(my_menu);
 
-   box(win, '|', '-');
+   wborder(win, '|', '|', '-', '-', '+', '+', '+', '+');
    mvwaddstr(win, 0, (w_win / 2) -  (strlen(win_title) / 2), win_title);
 
    wrefresh(stdscr);
