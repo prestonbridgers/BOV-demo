@@ -115,6 +115,16 @@ main(int argc, char **argv)
    noecho();
    keypad(stdscr, TRUE);
 
+   //FILE *fd = fopen("tmp.log", "w");
+   //fprintf(fd, "Col: %d\nLines: %d\n\n", COLS, LINES);
+   //fclose(fd);
+   // 130 x 43
+   if (COLS < 130 || LINES < 43) {
+      endwin();
+      printf("Error: Terminal size too small.\n\tPlease resize your terminal to at least 130x43 for best results\n");
+      return EXIT_SUCCESS;
+   }
+
    w_win = get_largest_choice_width() + 10;
    h_win = num_demos + 2 + 6;
    x_win = COLS / 2 - (w_win / 2);
