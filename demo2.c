@@ -1,4 +1,4 @@
-/* [filename.c]
+/* [demo2.c]
  * author: Curt Bridgers
  * email: prestonbridgers@gmail.com
 */
