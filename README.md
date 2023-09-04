@@ -39,7 +39,7 @@ run the demo.
 
 ## Author
 
-👤 **Curt Bridgers**
+👤 **Preston Bridgers**
 
 * Github: [@prestonbridgers](https://github.com/prestonbridgers)
 * LinkedIn: [@prestonbridgers](https://linkedin.com/in/prestonbridgers)
